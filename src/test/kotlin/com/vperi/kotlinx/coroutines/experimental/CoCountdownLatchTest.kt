@@ -1,9 +1,9 @@
 package com.vperi.kotlinx.coroutines.experimental
 
-
 import kotlinx.coroutines.experimental.*
 import org.junit.Test
 import java.util.concurrent.ThreadLocalRandom
+import java.util.concurrent.atomic.AtomicLong
 import kotlin.test.assertEquals
 
 class CoCountdownLatchTest {
@@ -18,14 +18,18 @@ class CoCountdownLatchTest {
   fun await() {
     val count = 9L
     val latch = CoCountdownLatch(count)
+    val counter = AtomicLong(0)
     runBlocking {
       (0 until count).forEach {
         async {
           delay(ThreadLocalRandom.current().nextInt(100, 500))
+          counter.incrementAndGet()
           latch.countDown()
         }
       }
       latch.await()
+      assertEquals(count, counter.get())
+      println(counter.get())
     }
   }
 

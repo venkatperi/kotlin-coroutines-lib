@@ -13,6 +13,26 @@ A [CoCountdownLatch](./index.md) is initialized with a given count. The
 invocations of the [countDown](count-down.md) method, after which all waiting coroutines
 are released and any subsequent invocations of await return immediately.
 
+Example:
+
+```
+val count = 9L
+val latch = CoCountdownLatch(count)
+val counter = AtomicLong(0)
+runBlocking {
+  (0 until count).forEach {
+    async {
+      delay(ThreadLocalRandom.current().nextInt(100, 500))
+      counter.incrementAndGet()
+      latch.countDown()
+    }
+  }
+  latch.await()
+  assertEquals(count, counter.get())
+  println(counter.get())     //=> 9
+}
+```
+
 ### Constructors
 
 | Name | Summary |
