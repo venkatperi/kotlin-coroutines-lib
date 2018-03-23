@@ -86,10 +86,11 @@ jmh {
 }
 
 task copyDocs(type: Copy, dependsOn: ["dokka"]) {
-  from "$buildDir/gfm/kotlin-promise"
+  from "$buildDir/gfm/kotlin-coroutines-lib"
   into "$projectDir/docs"
-  rename 'index.md', 'readme.md'
-
+  doLast {
+    new File("$projectDir/docs/index.md").renameTo(new File("$projectDir/docs/readme.md"))
+  }
 }
 
 task docs(dependsOn: ["copyDocs"])
