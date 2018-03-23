@@ -69,7 +69,6 @@ dokka {
 dependencies {
   implementation "org.jetbrains.kotlin:kotlin-stdlib:${libs.kotlin}"
   implementation 'com.google.guava:guava:24.0-jre'
-  compile 'com.vperi:kotlin-util:1.0.2'
   compile "org.jetbrains.kotlinx:kotlinx-coroutines-core:${libs.kotlinx}"
   compile "org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:${libs.kotlinx}"
 

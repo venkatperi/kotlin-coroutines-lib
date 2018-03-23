@@ -38,9 +38,9 @@ import java.util.concurrent.atomic.AtomicLong
  * @param count the number of times [countDown] must be invoked before
  *      [await] will not block.
  */
-class CoCountdownLatch(val count: Long) {
-  private val latch = CompletableDeferred<Unit>()
-  private val done = AtomicLong(count)
+open class CoCountdownLatch(val count: Long) {
+  protected val latch = CompletableDeferred<Unit>()
+  protected val done = AtomicLong(count)
 
   init {
     require(count >= 0) { "Count $count cannot be negative" }
