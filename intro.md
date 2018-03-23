@@ -1,3 +1,5 @@
+[![](https://jitpack.io/v/com.vperi/kotlin-coroutines-lib.svg)](https://jitpack.io/#com.vperi/kotlin-coroutines-lib)
+
 # Module kotlin-coroutines-lib
 
 ## kotlin coroutines library
