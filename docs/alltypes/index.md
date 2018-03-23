@@ -1,6 +1,6 @@
 
 
-## kotlin coroutines library
+[![](https://jitpack.io/v/com.vperi/kotlin-coroutines-lib.svg)](https://jitpack.io/#com.vperi/kotlin-coroutines-lib)
 
 ### All Types
 
