@@ -15,10 +15,11 @@ import java.util.concurrent.atomic.AtomicLong
  * are released and any subsequent invocations of await return immediately.
  *
  * Example:
- * ```
+ * ```kotlin
  * val count = 9L
  * val latch = CoCountdownLatch(count)
  * val counter = AtomicLong(0)
+ *
  * runBlocking {
  *   (0 until count).forEach {
  *     async {
