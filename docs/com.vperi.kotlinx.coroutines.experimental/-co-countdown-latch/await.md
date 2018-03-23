@@ -7,3 +7,5 @@
 Waits until the latch has counted down to zero without blocking.
 This suspending function is cancellable.
 
+Returns immediately if the count is zero
+

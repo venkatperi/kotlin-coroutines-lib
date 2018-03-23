@@ -62,9 +62,12 @@ class CoCountdownLatch(val count: Long) {
    * Waits until the latch has counted down to zero without blocking.
    * This suspending function is cancellable.
    *
+   * Returns immediately if the count is zero
    */
-  suspend fun await() =
-    latch.await()
+  suspend fun await() {
+    if (!latch.isCompleted)
+      latch.await()
+  }
 
   /**
    * If not already complete, [cancel]
