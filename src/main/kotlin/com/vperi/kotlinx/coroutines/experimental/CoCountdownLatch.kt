@@ -40,7 +40,7 @@ import java.util.concurrent.atomic.AtomicLong
  */
 class CoCountdownLatch(val count: Long) {
   private val latch = CompletableDeferred<Unit>()
-  private val done = AtomicLong(0)
+  private val done = AtomicLong(count)
 
   init {
     require(count >= 0) { "Count $count cannot be negative" }
@@ -53,7 +53,7 @@ class CoCountdownLatch(val count: Long) {
    * suspended coroutines waiting via [await] resume immediately.
    */
   fun countDown() {
-    if (!latch.isCompleted && done.incrementAndGet() == count) {
+    if (!latch.isCompleted && done.decrementAndGet() == 0L) {
       latch.complete(Unit)
     }
   }
