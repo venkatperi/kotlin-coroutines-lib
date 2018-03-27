@@ -5,7 +5,7 @@ package com.vperi.kotlinx.coroutines.experimental
  * without blocking until a set of operations being performed in other
  * coroutines complete.
  *
- * A [CoCountdownLatch] is initialized with a given count. The
+ * A [CountDownLatch] is initialized with a given count. The
  * [await] methods block until the current count reaches zero due to
  * invocations of the [countDown] method, after which all waiting coroutines
  * are released and any subsequent invocations of await return immediately.
@@ -13,7 +13,7 @@ package com.vperi.kotlinx.coroutines.experimental
  * Example:
  * ```kotlin
  * val count = 9L
- * val latch = CoCountdownLatch(count)
+ * val latch = CountDownLatch(count)
  * val counter = AtomicLong(0)
  *
  * runBlocking {
@@ -30,16 +30,19 @@ package com.vperi.kotlinx.coroutines.experimental
  * }
  * ```
  *
- * @constructor Constructs a [CoCountdownLatch] initialized with the given count.
+ * @constructor Constructs a [CountDownLatch] initialized with the given count.
  * @param count the number of times [countDown] must be invoked before
  *      [await] will not block.
  */
-class CoCountdownLatch(count: Long) : AbstractCountingLatch(count) {
+class CountDownLatch(count: Long) : AbstractLatch(count, ZeroTrigger(count, true)) {
+
   init {
-    if (count == 0L)
-      latch.complete(Unit)
+    require(count >= 0) { "Count $count cannot be negative" }
+  }
+
+  fun countDown() {
+    trigger.decrement()
   }
 }
-
 
 

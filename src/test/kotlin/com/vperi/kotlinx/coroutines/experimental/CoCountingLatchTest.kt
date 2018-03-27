@@ -11,7 +11,7 @@ class CoCountingLatchTest {
 
   @Test
   fun count() {
-    val latch = CoCountingLatch(10)
+    val latch = CountingLatch(10)
     assertEquals(10, latch.count)
     assertEquals(10, latch.current)
   }
@@ -19,7 +19,7 @@ class CoCountingLatchTest {
   @Test
   fun await() {
     val count = 9L
-    val latch = CoCountingLatch(count)
+    val latch = CountingLatch(count)
     val counter = AtomicLong(0)
     runBlocking {
       (0 until count).forEach {
@@ -38,7 +38,7 @@ class CoCountingLatchTest {
   @Test(expected = TimeoutCancellationException::class)
   fun await_timeout_expires() {
     val count = 100L
-    val latch = CoCountingLatch(count)
+    val latch = CountingLatch(count)
     runBlocking {
       withTimeout(50) {
         (0 until count).forEach {
@@ -55,7 +55,7 @@ class CoCountingLatchTest {
   @Test
   fun await_timeout_does_not_expire() {
     val count = 100L
-    val latch = CoCountingLatch(count)
+    val latch = CountingLatch(count)
     var x = 0
     runBlocking {
       withTimeout(1000) {
@@ -75,7 +75,7 @@ class CoCountingLatchTest {
   @Test
   fun stress() {
     val count = 1000000L
-    val latch = CoCountingLatch(count)
+    val latch = CountingLatch(count)
     runBlocking {
       (0 until count).forEach {
         async {
@@ -88,7 +88,7 @@ class CoCountingLatchTest {
 
   @Test
   fun `when count is zero`() {
-    val latch = CoCountingLatch(0)
+    val latch = CountingLatch(0)
     assertFalse(latch.isCompleted)
   }
 

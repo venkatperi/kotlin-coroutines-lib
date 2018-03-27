@@ -6,18 +6,18 @@ import java.util.concurrent.ThreadLocalRandom
 import java.util.concurrent.atomic.AtomicLong
 import kotlin.test.assertEquals
 
-class CoCountdownLatchTest {
+class CountDownLatchTest {
 
   @Test
   fun count() {
-    val latch = CoCountdownLatch(10)
+    val latch = CountDownLatch(10)
     assertEquals(10, latch.count)
   }
 
   @Test
   fun await() {
     val count = 9L
-    val latch = CoCountdownLatch(count)
+    val latch = CountDownLatch(count)
     val counter = AtomicLong(0)
     runBlocking {
       (0 until count).forEach {
@@ -36,7 +36,7 @@ class CoCountdownLatchTest {
   @Test(expected = TimeoutCancellationException::class)
   fun await_timeout_expires() {
     val count = 100L
-    val latch = CoCountdownLatch(count)
+    val latch = CountDownLatch(count)
     runBlocking {
       withTimeout(50) {
         (0 until count).forEach {
@@ -53,7 +53,7 @@ class CoCountdownLatchTest {
   @Test
   fun await_timeout_does_not_expire() {
     val count = 100L
-    val latch = CoCountdownLatch(count)
+    val latch = CountDownLatch(count)
     var x = 0
     runBlocking {
       withTimeout(1000) {
@@ -73,7 +73,7 @@ class CoCountdownLatchTest {
   @Test
   fun stress() {
     val count = 1000000L
-    val latch = CoCountdownLatch(count)
+    val latch = CountDownLatch(count)
     runBlocking {
       (0 until count).forEach {
         async {

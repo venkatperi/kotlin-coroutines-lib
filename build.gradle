@@ -21,6 +21,7 @@ buildscript {
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${libs.kotlin}"
     classpath "org.jetbrains.dokka:dokka-gradle-plugin:${libs.dokka}"
     classpath "me.champeau.gradle:jmh-gradle-plugin:0.4.5"
+    classpath 'org.junit.platform:junit-platform-gradle-plugin:1.1.0'
   }
 }
 
@@ -29,6 +30,7 @@ apply plugin: 'java'
 apply plugin: 'maven'
 apply plugin: 'org.jetbrains.dokka'
 apply plugin: "me.champeau.gradle.jmh"
+apply plugin: 'org.junit.platform.gradle.plugin'
 
 
 group = "com.vperi"
@@ -48,7 +50,15 @@ repositories {
 }
 
 sourceSets {
-  jmh.kotlin.srcDirs += 'src/jmh/myKotlin'
+  jmh.kotlin.srcDirs += 'src/jmh/kotlin'
+}
+
+junitPlatform {
+  filters {
+    engines {
+      include 'spek'
+    }
+  }
 }
 
 dokka {
@@ -72,9 +82,18 @@ dependencies {
   compile "org.jetbrains.kotlinx:kotlinx-coroutines-core:${libs.kotlinx}"
   compile "org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:${libs.kotlinx}"
 
+  testCompile "org.jetbrains.kotlin:kotlin-reflect:${libs.kotlin}"
 
-  testCompile 'junit:junit:4.12'
+  testCompile ('org.jetbrains.spek:spek-api:1.1.5') {
+    exclude group: 'org.jetbrains.kotlin'
+  }
+  testRuntime ('org.jetbrains.spek:spek-junit-platform-engine:1.1.5') {
+    exclude group: 'org.junit.platform'
+    exclude group: 'org.jetbrains.kotlin'
+  }
   testCompile "org.jetbrains.kotlin:kotlin-test-junit:${libs.kotlin}"
+  testCompile("junit:junit:4.12")
+  testRuntime("org.junit.vintage:junit-vintage-engine:5.1.0")
   testCompile group: 'net.jodah', name: 'concurrentunit', version: '0.4.3'
 }
 
@@ -97,6 +116,13 @@ task docs(dependsOn: ["copyDocs"])
 kotlin {
   experimental {
     coroutines "enable"
+  }
+}
+
+tasks.withType(Test) {
+  testLogging {
+    showStandardStreams = true
+    events "passed", "failed"
   }
 }
 
