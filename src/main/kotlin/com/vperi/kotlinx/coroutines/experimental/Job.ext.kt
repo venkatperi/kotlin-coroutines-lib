@@ -4,11 +4,12 @@ import kotlinx.coroutines.experimental.CompletableDeferred
 import kotlinx.coroutines.experimental.Deferred
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.async
-import kotlinx.coroutines.experimental.channels.ReceiveChannel
-import kotlinx.coroutines.experimental.channels.filter
-import kotlinx.coroutines.experimental.channels.first
-import kotlinx.coroutines.experimental.channels.produce
+import kotlinx.coroutines.experimental.channels.*
 
+/**
+ * Suspends until job is complete. Calls [Deferred.await]
+ * for [Deferred].
+ */
 suspend fun <T : Job> T.awaitCompletion() {
   when (this) {
     is Deferred<*> -> this.await()
@@ -16,6 +17,10 @@ suspend fun <T : Job> T.awaitCompletion() {
   }
 }
 
+/**
+ * Returns true if the job has completed exceptionally or
+ * has been cancelled.
+ */
 val <T : Job> T.failed: Boolean
   get() {
     if (!isCompleted) throw IllegalStateException("Not completed")
@@ -25,6 +30,9 @@ val <T : Job> T.failed: Boolean
     }
   }
 
+/**
+ * Returns the failure exception
+ */
 val <T : Job> T.failureException: Throwable?
   get() {
     if (!isCompleted) throw IllegalStateException("Not completed")
@@ -63,6 +71,13 @@ fun <T : Job> Iterable<T>.forEachIndexedAsync(block: suspend (Int, T) -> Unit) {
   }
 }
 
+/**
+ * Returns a [ReceiveChannel] which provides completed jobs from
+ * the [Iterable] in the order of completion.
+ *
+ * Channel elements are [IndexedValue] wrappers on the [Iterable]s
+ * jobs.
+ */
 fun <T : Job> Iterable<T>.completed(): ReceiveChannel<IndexedValue<T>> =
   produce {
     val latch = CountDownLatch(count().toLong())
@@ -81,29 +96,38 @@ fun <T : Job> Iterable<T>.completed(): ReceiveChannel<IndexedValue<T>> =
 
 /**
  * Completes with the index of the first [Job] that completes
- * or completes exceptionally with the
+ * (either successfully or exceptionally).
  *
  * If the iterable is empty, the returned [Deferred] never
  * completes.
  */
-suspend fun <T : Job> Iterable<T>.race(): Deferred<Int> =
-  CompletableDeferred<Int>().apply {
-    completed().first { (i, it) ->
+suspend fun <T : Job> Iterable<T>.race(): Deferred<IndexedValue<T>> =
+  CompletableDeferred<IndexedValue<T>>().apply {
+    completed().first {
       when {
-        !it.failed -> complete(i)
-        else -> completeExceptionally(
-          ErrorAtIndexException(i, it.failureException!!))
+        it.value.failed -> completeExceptionally(
+          IndexedException(it.index, it.value.failureException!!))
+        else -> complete(it)
       }
     }
   }
 
+/**
+ * Returns a [Deferred] which completes successfully when all the
+ * [Job]s in the [Iterable] complete successfully or
+ * completes exceptionally with the reason of the first
+ * [Job] that completes exceptionally.
+ *
+ * If the [Iterable] is empty, the returned [Deferred]
+ * completes immediately.
+ */
 suspend fun <T : Job> Iterable<T>.all(): Deferred<Unit> =
   CompletableDeferred<Unit>().apply {
     completed()
       .filter { it.value.failed }
-      .first { (i, it) ->
+      .firstOrNull { (i, it) ->
         completeExceptionally(
-          ErrorAtIndexException(i, it.failureException!!))
+          IndexedException(i, it.failureException!!))
       }
     complete(Unit)
   }

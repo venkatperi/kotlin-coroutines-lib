@@ -1,7 +1,6 @@
 package com.vperi.kotlinx.coroutines.experimental
 
 import kotlinx.coroutines.experimental.CompletableDeferred
-import kotlinx.coroutines.experimental.NonCancellable.isCompleted
 import java.util.concurrent.atomic.AtomicLong
 
 abstract class AbstractTrigger(
@@ -42,13 +41,3 @@ class ZeroTrigger(
   }
 }
 
-class NonZeroTrigger(
-  initial: Long
-) : AbstractTrigger(initial) {
-  override fun test(block: () -> Long): Long {
-    val v = block()
-    if (!isCompleted && v != 0L)
-      complete(Unit)
-    return v
-  }
-}
