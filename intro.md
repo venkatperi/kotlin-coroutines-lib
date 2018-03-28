@@ -7,7 +7,7 @@ Utilities & helpers for use with `kotlin` coroutines.
 
 
 ## Operations on Job Lists 
-* [lists](./com.vperi.kotlinx.coroutines.experimental/-kotlin.collections.-iterable/index.md) 
+* [lists](./com.vperi.kotlinx.coroutines.experimental/kotlin.collections.-iterable/index.md) 
 
 ## Concurrency 
 * [CountDownLatch](./com.vperi.kotlinx.coroutines.experimental/-count-down-latch/index.md) 
