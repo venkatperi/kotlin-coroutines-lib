@@ -6,9 +6,14 @@
 
 Utilities &amp; helpers for use with `kotlin` coroutines.
 
-## Contents
+## Operations on Job Lists
 
-* [CoCountdownLatch](./com.vperi.kotlinx.coroutines.experimental/-co-countdown-latch/index.md) similar to Java's  [CountDownLatch](https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/CountDownLatch.html#await(long,%20java.util.concurrent.TimeUnit))
+* [lists](./com.vperi.kotlinx.coroutines.experimental/-kotlin.collections.-iterable/index.md)
+
+## Concurrency
+
+* [CountDownLatch](./com.vperi.kotlinx.coroutines.experimental/-count-down-latch/index.md)
+* [CountingLatch](./com.vperi.kotlinx.coroutines.experimental/-counting-latch/index.md)
 
 ## Installation
 
@@ -31,6 +36,7 @@ dependencies {
 
 | Name | Summary |
 |---|---|
+| [com.vperi.kotlin.collections](com.vperi.kotlin.collections/index.md) |  |
 | [com.vperi.kotlinx.coroutines.experimental](com.vperi.kotlinx.coroutines.experimental/index.md) |  |
 
 ### Index

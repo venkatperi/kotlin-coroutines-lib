@@ -15,7 +15,7 @@ fun getList(count: Int,
   time: ((Int) -> Long) = { (count - it) * 10L }
 ): List<CompletableDeferred<Int>> {
   val list = listOfCompletableDeferred<Int>(count)
-  list.forEachIndexedAsync { i, it ->
+  list.withIndex().forEachAsync { (i, it) ->
     delay(time(i))
     if (i == failAt)
       it.completeExceptionally(Exception("failed at $i"))

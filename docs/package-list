@@ -1,4 +1,13 @@
 $dokka.format:gfm
 $dokka.linkExtension:md
-
+$dokka.location:com.vperi.kotlin.collections$asImmutable(kotlin.collections.Iterable((com.vperi.kotlin.collections.asImmutable.T)))com.vperi.kotlin.collections/kotlin.collections.-iterable/as-immutable.md
+$dokka.location:com.vperi.kotlinx.coroutines.experimental$all(kotlin.collections.Iterable((com.vperi.kotlinx.coroutines.experimental.all.T)))com.vperi.kotlinx.coroutines.experimental/kotlin.collections.-iterable/all.md
+$dokka.location:com.vperi.kotlinx.coroutines.experimental$awaitBlocking(kotlinx.coroutines.experimental.Deferred((com.vperi.kotlinx.coroutines.experimental.awaitBlocking.T)))com.vperi.kotlinx.coroutines.experimental/kotlinx.coroutines.experimental.-deferred/await-blocking.md
+$dokka.location:com.vperi.kotlinx.coroutines.experimental$completed(kotlin.collections.Iterable((com.vperi.kotlinx.coroutines.experimental.completed.T)))com.vperi.kotlinx.coroutines.experimental/kotlin.collections.-iterable/completed.md
+$dokka.location:com.vperi.kotlinx.coroutines.experimental$failed(kotlin.collections.Iterable((com.vperi.kotlinx.coroutines.experimental.failed.T)))com.vperi.kotlinx.coroutines.experimental/kotlin.collections.-iterable/failed.md
+$dokka.location:com.vperi.kotlinx.coroutines.experimental$forEachAsync(kotlin.collections.Iterable((com.vperi.kotlinx.coroutines.experimental.forEachAsync.T)), kotlin.SuspendFunction1((com.vperi.kotlinx.coroutines.experimental.forEachAsync.T, kotlin.Unit)))com.vperi.kotlinx.coroutines.experimental/kotlin.collections.-iterable/for-each-async.md
+$dokka.location:com.vperi.kotlinx.coroutines.experimental$forEachAsync(kotlin.collections.Iterable((com.vperi.kotlinx.coroutines.experimental.forEachAsync.V)), kotlin.SuspendFunction1((com.vperi.kotlinx.coroutines.experimental.forEachAsync.V, kotlin.Unit)))com.vperi.kotlinx.coroutines.experimental/kotlin.collections.-iterable/for-each-async.md
+$dokka.location:com.vperi.kotlinx.coroutines.experimental$race(kotlin.collections.Iterable((com.vperi.kotlinx.coroutines.experimental.race.T)))com.vperi.kotlinx.coroutines.experimental/kotlin.collections.-iterable/race.md
+$dokka.location:com.vperi.kotlinx.coroutines.experimental$succeeded(kotlin.collections.Iterable((com.vperi.kotlinx.coroutines.experimental.succeeded.T)))com.vperi.kotlinx.coroutines.experimental/kotlin.collections.-iterable/succeeded.md
+com.vperi.kotlin.collections
 com.vperi.kotlinx.coroutines.experimental

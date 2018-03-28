@@ -3,29 +3,23 @@ package com.vperi.kotlinx.coroutines.experimental
 import kotlinx.coroutines.experimental.*
 import kotlinx.coroutines.experimental.channels.*
 
-fun <T : Job> Iterable<T>.forEachAsync(block: suspend (T) -> Unit) {
+/**
+ * Performs the given [action] asynchronously on each element.
+ */
+fun <T : Job> Iterable<T>.forEachAsync(action: suspend (T) -> Unit) {
   forEach {
-    async { block(it) }
+    async { action(it) }
   }
 }
 
+/**
+ * Performs the [action] asynchronously on each element as an
+ * [IndexedValue].
+ */
 @JvmName("indexedAsync")
-fun <T : Job, V : IndexedValue<T>> Iterable<V>.forEachAsync(block: suspend (V) -> Unit) {
+fun <T : Job, V : IndexedValue<T>> Iterable<V>.forEachAsync(action: suspend (V) -> Unit) {
   forEach {
-    async { block(it) }
-  }
-}
-
-@JvmName("mapAsync")
-fun <T : Job, V : IndexedValue<T>> Iterable<V>.mapAsync(block: suspend (V) -> Unit): List<Deferred<Unit>> {
-  return map {
-    async { block(it) }
-  }
-}
-
-fun <T : Job> Iterable<T>.forEachIndexedAsync(block: suspend (Int, T) -> Unit) {
-  forEachIndexed { i, it ->
-    async { block(i, it) }
+    async { action(it) }
   }
 }
 
@@ -35,6 +29,8 @@ fun <T : Job> Iterable<T>.forEachIndexedAsync(block: suspend (Int, T) -> Unit) {
  *
  * Channel elements are [IndexedValue] wrappers on the [Iterable]s
  * jobs.
+ *
+ * Consumes all jobs in the given [Iterable]
  */
 fun <T : Job> Iterable<T>.completed(): ReceiveChannel<IndexedValue<T>> =
   produce {
@@ -53,8 +49,22 @@ fun <T : Job> Iterable<T>.completed(): ReceiveChannel<IndexedValue<T>> =
   }
 
 /**
- * Completes with the index of the first [Job] that completes
- * (either successfully or exceptionally).
+ * Like [completed], returns a [ReceiveChannel] that provides
+ * only those jobs that have completed exceptionally or cancelled
+ */
+fun <T : Job> Iterable<T>.failed(): ReceiveChannel<IndexedValue<T>> =
+  completed().filter { it.value.failed }
+
+/**
+ * Like [completed], returns a [ReceiveChannel] that provides
+ * only those jobs that have completed successfully.
+ */
+fun <T : Job> Iterable<T>.succeeded(): ReceiveChannel<IndexedValue<T>> =
+  completed().filter { !it.value.failed }
+
+/**
+ * Returns a [Deferred] that completes with the index of the
+ * first [Job] that completes (either successfully or exceptionally).
  *
  * If the iterable is empty, the returned [Deferred] never
  * completes.
@@ -84,11 +94,10 @@ fun <T : Job> Iterable<T>.race(): Deferred<IndexedValue<T>> =
 fun <T : Job> Iterable<T>.all(): Deferred<Unit> =
   CompletableDeferred<Unit>().apply {
     async {
-      completed()
-        .firstOrNull { it.value.failed }?.let { (i, it) ->
-          completeExceptionally(
-            IndexedException(i, it.failureException!!))
-        }
+      failed().firstOrNull()?.let { (i, it) ->
+        completeExceptionally(
+          IndexedException(i, it.failureException!!))
+      }
       complete(Unit)
     }
   }

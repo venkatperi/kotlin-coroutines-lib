@@ -5,9 +5,13 @@
 ## kotlin coroutines library
 Utilities & helpers for use with `kotlin` coroutines.
 
-## Contents
-* [CoCountdownLatch](./com.vperi.kotlinx.coroutines.experimental/-co-countdown-latch/index.md) similar to Java's  [CountDownLatch](https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/CountDownLatch.html#await(long,%20java.util.concurrent.TimeUnit))
 
+## Operations on Job Lists 
+* [lists](./com.vperi.kotlinx.coroutines.experimental/-kotlin.collections.-iterable/index.md) 
+
+## Concurrency 
+* [CountDownLatch](./com.vperi.kotlinx.coroutines.experimental/-count-down-latch/index.md) 
+* [CountingLatch](./com.vperi.kotlinx.coroutines.experimental/-counting-latch/index.md) 
 
 ## Installation
 Install with [jitpack](https://jitpack.io/#com.vperi/kotlin-coroutines-lib/):
