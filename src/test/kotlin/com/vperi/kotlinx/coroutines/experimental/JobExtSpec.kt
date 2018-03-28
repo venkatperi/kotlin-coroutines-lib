@@ -1,41 +1,30 @@
 package com.vperi.kotlinx.coroutines.experimental
 
-import kotlinx.coroutines.experimental.CompletableDeferred
+import kotlinx.coroutines.experimental.TimeoutCancellationException
 import kotlinx.coroutines.experimental.channels.map
 import kotlinx.coroutines.experimental.channels.toList
-import kotlinx.coroutines.experimental.delay
 import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.experimental.withTimeout
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
 import org.jetbrains.spek.api.dsl.on
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
-
-fun <V> listOfCompletableDeferred(count: Int): List<CompletableDeferred<V>> =
-  (0 until count).map { CompletableDeferred<V>() }
-
-fun getList(count: Int,
-  failAt: Int? = null,
-  time: ((Int) -> Long) = { (count - it) * 10L }
-): List<CompletableDeferred<Int>> {
-  val list = listOfCompletableDeferred<Int>(count)
-  list.forEachIndexedAsync { i, it ->
-    delay(time(i))
-    if (i == failAt)
-      it.completeExceptionally(Exception("failed at $i"))
-    else
-      it.complete(i)
-  }
-  return list
-}
+import kotlin.test.assertFailsWith
 
 object JobExtSpec : Spek({
   val count = 10
 
-
   describe("Iterable<Job>.completed") {
-    it("returns in order of completion") {
+
+    it("closes stream immediately on empty list") {
+      val list = getList(0)
+      runBlocking {
+        list.completed()
+      }
+    }
+
+    it("sends jobs in order of completion") {
       val list = getList(count)
       runBlocking {
         val res = list.completed().map { it.index }.toList()
@@ -46,36 +35,46 @@ object JobExtSpec : Spek({
 
   describe("Iterable<Job>.all") {
 
-    on("has no failing jobs") {
-      it("waits for all to finish") {
-        val list = getList(count)
-        runBlocking {
-          list.all().await()
-          assertEquals(count, list.filter { it.isCompleted }.count())
-        }
+    on("empty list") {
+      it("completes immediately") {
+        getList(0).all().awaitBlocking()
       }
     }
 
-    on("has failing jobs") {
+    on("no failing jobs") {
+      it("waits for all to finish") {
+        val list = getList(count)
+        list.all().awaitBlocking()
+        assertEquals(count, list.filter { it.isCompleted }.count())
+      }
+    }
+
+    on("failing jobs") {
       it("completes on first failure") {
         val failAt = 4
         val list = getList(count, failAt)
-        runBlocking {
-          val d = list.all()
-          try {
-            d.await()
-          } catch (e: IndexedException) {
-            assertEquals(failAt, e.index)
-          } finally {
-            assertTrue(d.isCompletedExceptionally)
-          }
-        }
+        val e = assertCompletedExceptionally(
+          list.all(), IndexedException::class)
+        assertEquals(failAt, e.index)
       }
     }
 
   }
 
   describe("Iterable<Job>.race") {
+
+    on("empty list") {
+      it("never completes") {
+        val list = getList(0)
+        assertFailsWith(TimeoutCancellationException::class) {
+          runBlocking {
+            withTimeout(1000) {
+              list.race().await()
+            }
+          }
+        }
+      }
+    }
 
     it("completes when first job completes") {
       val list = getList(count)
@@ -90,13 +89,9 @@ object JobExtSpec : Spek({
       val list = getList(count, failAt) {
         if (it == failAt) 100L else 200L
       }
-      runBlocking {
-        try {
-          list.race().await()
-        } catch (e: IndexedException) {
-          assertEquals(failAt, e.index)
-        }
-      }
+      val e = assertCompletedExceptionally(
+        list.all(), IndexedException::class)
+      assertEquals(failAt, e.index)
     }
 
   }
