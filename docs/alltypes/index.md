@@ -14,4 +14,6 @@
 | [com.vperi.kotlinx.coroutines.experimental.IndexedException](../com.vperi.kotlinx.coroutines.experimental/-indexed-exception/index.md) |  |
 | [kotlin.collections.Iterable](../com.vperi.kotlin.collections/kotlin.collections.-iterable/index.md) (extensions in package com.vperi.kotlin.collections) |  |
 | [kotlin.collections.Iterable](../com.vperi.kotlinx.coroutines.experimental/kotlin.collections.-iterable/index.md) (extensions in package com.vperi.kotlinx.coroutines.experimental) |  |
+| [com.vperi.kotlin.test.Waiter](../com.vperi.kotlin.test/-waiter/index.md) |  |
+| [com.vperi.kotlin.test.WaiterBlock](../com.vperi.kotlin.test/-waiter-block.md) |  |
 | [com.vperi.kotlinx.coroutines.experimental.ZeroTrigger](../com.vperi.kotlinx.coroutines.experimental/-zero-trigger/index.md) |  |

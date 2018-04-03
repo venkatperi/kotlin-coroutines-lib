@@ -37,6 +37,7 @@ dependencies {
 | Name | Summary |
 |---|---|
 | [com.vperi.kotlin.collections](com.vperi.kotlin.collections/index.md) |  |
+| [com.vperi.kotlin.test](com.vperi.kotlin.test/index.md) |  |
 | [com.vperi.kotlinx.coroutines.experimental](com.vperi.kotlinx.coroutines.experimental/index.md) |  |
 
 ### Index

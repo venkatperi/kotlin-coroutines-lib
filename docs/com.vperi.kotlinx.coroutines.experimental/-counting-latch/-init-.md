@@ -2,7 +2,7 @@
 
 # &lt;init&gt;
 
-`CountingLatch(count: `[`Long`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html)`)`
+`CountingLatch(count: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)`)``CountingLatch(count: `[`Long`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html)`, parent: Job? = null)`
 
 Like a [CountDownLatch](../-count-down-latch/index.md) but the count can be increased
 via [countUp](count-up.md)

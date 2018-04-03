@@ -2,7 +2,7 @@
 
 # &lt;init&gt;
 
-`CountDownLatch(count: `[`Long`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html)`)`
+`CountDownLatch(count: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)`)``CountDownLatch(count: `[`Long`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html)`, parent: Job? = null)`
 
 Constructs a [CountDownLatch](index.md) initialized with the given count.
 

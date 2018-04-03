@@ -113,6 +113,10 @@ task copyDocs(type: Copy, dependsOn: ["dokka"]) {
 
 task docs(dependsOn: ["copyDocs"])
 
+clean.doLast {
+  file("$projectDir/docs").deleteDir()
+}
+
 kotlin {
   experimental {
     coroutines "enable"

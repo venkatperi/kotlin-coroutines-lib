@@ -8,6 +8,8 @@ $dokka.location:com.vperi.kotlinx.coroutines.experimental$failed(kotlin.collecti
 $dokka.location:com.vperi.kotlinx.coroutines.experimental$forEachAsync(kotlin.collections.Iterable((com.vperi.kotlinx.coroutines.experimental.forEachAsync.T)), kotlin.SuspendFunction1((com.vperi.kotlinx.coroutines.experimental.forEachAsync.T, kotlin.Unit)))com.vperi.kotlinx.coroutines.experimental/kotlin.collections.-iterable/for-each-async.md
 $dokka.location:com.vperi.kotlinx.coroutines.experimental$forEachAsync(kotlin.collections.Iterable((com.vperi.kotlinx.coroutines.experimental.forEachAsync.V)), kotlin.SuspendFunction1((com.vperi.kotlinx.coroutines.experimental.forEachAsync.V, kotlin.Unit)))com.vperi.kotlinx.coroutines.experimental/kotlin.collections.-iterable/for-each-async.md
 $dokka.location:com.vperi.kotlinx.coroutines.experimental$race(kotlin.collections.Iterable((com.vperi.kotlinx.coroutines.experimental.race.T)))com.vperi.kotlinx.coroutines.experimental/kotlin.collections.-iterable/race.md
+$dokka.location:com.vperi.kotlinx.coroutines.experimental$sequentially(kotlin.collections.Iterable((com.vperi.kotlinx.coroutines.experimental.sequentially.T)))com.vperi.kotlinx.coroutines.experimental/kotlin.collections.-iterable/sequentially.md
 $dokka.location:com.vperi.kotlinx.coroutines.experimental$succeeded(kotlin.collections.Iterable((com.vperi.kotlinx.coroutines.experimental.succeeded.T)))com.vperi.kotlinx.coroutines.experimental/kotlin.collections.-iterable/succeeded.md
 com.vperi.kotlin.collections
+com.vperi.kotlin.test
 com.vperi.kotlinx.coroutines.experimental

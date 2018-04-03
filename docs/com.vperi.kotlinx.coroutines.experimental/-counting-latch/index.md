@@ -11,7 +11,7 @@ via [countUp](count-up.md)
 
 | Name | Summary |
 |---|---|
-| [&lt;init&gt;](-init-.md) | `CountingLatch(count: `[`Long`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html)`)`<br>Like a [CountDownLatch](../-count-down-latch/index.md) but the count can be increased via [countUp](count-up.md) |
+| [&lt;init&gt;](-init-.md) | `CountingLatch(count: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)`)``CountingLatch(count: `[`Long`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html)`, parent: Job? = null)`<br>Like a [CountDownLatch](../-count-down-latch/index.md) but the count can be increased via [countUp](count-up.md) |
 
 ### Inherited Properties
 

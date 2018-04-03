@@ -1,7 +1,15 @@
+@file:Suppress("unused")
+
 package com.vperi.kotlinx.coroutines.experimental
 
-import kotlinx.coroutines.experimental.*
-import kotlinx.coroutines.experimental.channels.*
+import kotlinx.coroutines.experimental.CompletableDeferred
+import kotlinx.coroutines.experimental.Deferred
+import kotlinx.coroutines.experimental.Job
+import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.experimental.channels.ReceiveChannel
+import kotlinx.coroutines.experimental.channels.filter
+import kotlinx.coroutines.experimental.channels.firstOrNull
+import kotlinx.coroutines.experimental.channels.produce
 
 /**
  * Performs the given [action] asynchronously on each element.
@@ -36,13 +44,9 @@ fun <T : Job> Iterable<T>.completed(): ReceiveChannel<IndexedValue<T>> =
   produce {
     val latch = CountDownLatch(count().toLong())
     withIndex().forEachAsync {
-      try {
-        it.value.awaitCompletion()
-      } catch (e: Exception) {
-      } finally {
-        latch.countDown()
-        send(it)
-      }
+      it.value.tryAwaitCompletion()
+      latch.countDown()
+      send(it)
     }
     latch.await()
     close()
@@ -100,5 +104,18 @@ fun <T : Job> Iterable<T>.all(): Deferred<Unit> =
       }
       complete(Unit)
     }
+  }
+
+/**
+ * Returns completed jobs from the given [Iterable] in
+ * a sequentially manner.
+ */
+fun <T : Job> Iterable<T>.sequentially(): ReceiveChannel<T> =
+  produce {
+    forEach {
+      it.tryAwaitCompletion()
+      send(it)
+    }
+    close()
   }
 

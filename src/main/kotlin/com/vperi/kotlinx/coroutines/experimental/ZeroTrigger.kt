@@ -1,11 +1,13 @@
 package com.vperi.kotlinx.coroutines.experimental
 
 import kotlinx.coroutines.experimental.CompletableDeferred
+import kotlinx.coroutines.experimental.Job
 import java.util.concurrent.atomic.AtomicLong
 
 abstract class AbstractTrigger(
-  initial: Long
-) : CompletableDeferred<Unit> by CompletableDeferred() {
+  initial: Long,
+  parent: Job? = null
+) : CompletableDeferred<Unit> by CompletableDeferred(parent) {
   private val value = AtomicLong(initial)
 
   fun increment(): Long = test({ value.incrementAndGet() })
@@ -21,8 +23,9 @@ abstract class AbstractTrigger(
 
 class ZeroTrigger(
   initial: Long,
-  triggerInitially: Boolean = true
-) : AbstractTrigger(initial) {
+  triggerInitially: Boolean = true,
+  parent: Job? = null
+) : AbstractTrigger(initial, parent) {
 
   init {
     test {

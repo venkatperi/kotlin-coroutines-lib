@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package com.vperi.kotlinx.coroutines.experimental
 
 import kotlinx.coroutines.experimental.Deferred
@@ -12,6 +14,13 @@ suspend fun <T : Job> T.awaitCompletion() {
   when (this) {
     is Deferred<*> -> this.await()
     else -> this.join()
+  }
+}
+
+suspend fun <T : Job> T.tryAwaitCompletion() {
+  try {
+    awaitCompletion()
+  } catch (e: Exception) {
   }
 }
 

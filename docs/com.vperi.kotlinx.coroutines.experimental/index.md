@@ -37,3 +37,4 @@
 | Name | Summary |
 |---|---|
 | [awaitCompletion](await-completion.md) | `suspend fun <T : Job> `[`T`](await-completion.md#T)`.awaitCompletion(): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html)<br>Suspends until job is complete. Calls [Deferred.await](#) for [Deferred](#). |
+| [tryAwaitCompletion](try-await-completion.md) | `suspend fun <T : Job> `[`T`](try-await-completion.md#T)`.tryAwaitCompletion(): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |

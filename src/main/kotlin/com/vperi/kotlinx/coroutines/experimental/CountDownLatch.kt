@@ -1,5 +1,7 @@
 package com.vperi.kotlinx.coroutines.experimental
 
+import kotlinx.coroutines.experimental.Job
+
 /**
  * A synchronization aid that allows one or more coroutines to wait
  * without blocking until a set of operations being performed in other
@@ -34,7 +36,12 @@ package com.vperi.kotlinx.coroutines.experimental
  * @param count the number of times [countDown] must be invoked before
  *      [await] will not block.
  */
-class CountDownLatch(count: Long) : AbstractLatch(count, ZeroTrigger(count, true)) {
+class CountDownLatch(
+  count: Long,
+  parent: Job? = null) :
+  AbstractLatch(count, ZeroTrigger(count, true, parent)) {
+
+  constructor(count: Int) : this(count.toLong())
 
   init {
     require(count >= 0) { "Count $count cannot be negative" }
