@@ -1,6 +1,8 @@
+@file:Suppress("unused")
+
 package com.vperi.kotlinx.coroutines.experimental
 
-import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.experimental.channels.SendChannel
 import kotlinx.coroutines.experimental.channels.actor
 import kotlinx.coroutines.experimental.channels.consumeEach
 import kotlin.coroutines.experimental.coroutineContext
@@ -10,25 +12,29 @@ suspend fun <T> nullActor() =
     channel.consumeEach { }
   }
 
-suspend fun <T> spy(block: suspend (T) -> Unit) =
+suspend fun <T> tee(other: SendChannel<T>) =
   transform<T, T>(coroutineContext) {
     input.consumeEach {
       output.send(it)
-      block(it)
+      other.send(it)
+    }
+  }.apply {
+    then {
+      other.close()
     }
   }
 
-suspend fun <T> contents(callback: suspend (List<T>) -> Unit): TransformCoroutine<T, T> {
+suspend fun <T> contents(
+  callback: suspend (List<T>) -> Unit): TransformCoroutine<T, T> {
   val elements = ArrayList<T>()
-  val t = transform<T, T>(coroutineContext) {
+  return transform<T, T>(coroutineContext) {
     input.consumeEach {
       elements.add(it)
       output.send(it)
     }
+  }.apply {
+    then {
+      callback(elements)
+    }
   }
-  async(coroutineContext) {
-    t.join()
-    callback(elements)
-  }
-  return t
 }

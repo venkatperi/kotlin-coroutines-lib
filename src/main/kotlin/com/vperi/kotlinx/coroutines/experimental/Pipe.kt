@@ -32,7 +32,7 @@ fun <E> buildPipe(
   parent: Job? = null
 ): PipeCoroutine<E> =
   PipeCoroutine(
-    newCoroutineContext(context, parent),
+    parentContext = newCoroutineContext(context, parent),
     source = source,
     destination = destination,
     active = true).apply {

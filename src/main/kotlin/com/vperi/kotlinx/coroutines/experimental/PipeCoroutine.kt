@@ -24,3 +24,4 @@ class PipeCoroutine<E>(
   override fun cancel(cause: Throwable?): Boolean =
     source.cancel(cause)
 }
+

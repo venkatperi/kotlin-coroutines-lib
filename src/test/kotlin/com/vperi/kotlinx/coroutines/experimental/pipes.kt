@@ -3,6 +3,7 @@ package com.vperi.kotlinx.coroutines.experimental
 import com.google.common.io.Files
 import com.thedeanda.lorem.Lorem
 import com.thedeanda.lorem.LoremIpsum
+import kotlinx.coroutines.experimental.channels.Channel
 import kotlinx.coroutines.experimental.channels.consumeEach
 import kotlinx.coroutines.experimental.runBlocking
 import org.junit.Rule
@@ -71,15 +72,23 @@ class PipesTest {
   @Test
   fun transform1() {
     val inputFile = tmpDir.newFile()
-    val data = lorem.getParagraphs(100, 200)
+    val data = lorem.getParagraphs(1000, 2000)
     val lines = data.split("\n")
     Files.asCharSink(inputFile, StandardCharsets.UTF_8).write(data)
 
+
     runBlocking {
+      val listener = Channel<String>()
+//      async(coroutineContext) {
+//        listener.consumeEach {
+//          println(it)
+//        }
+//      }
+
       FS.createReader(inputFile.toPath())
         .pipe(decodeUtf8())
         .pipe(splitLines())
-//        .pipe(spy({ println("> $it") }))
+//        .pipe(tee(listener))
         .pipe(contents({
           assertEquals(lines.size, it.size)
         }))
