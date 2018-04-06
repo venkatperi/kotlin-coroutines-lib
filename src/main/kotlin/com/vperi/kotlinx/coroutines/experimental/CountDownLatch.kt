@@ -52,4 +52,18 @@ class CountDownLatch(
   }
 }
 
+suspend fun withCountDown(count: Long,
+  parent: Job? = null,
+  block: suspend CountDownLatch.() -> Unit) {
+  val latch = CountDownLatch(count, parent)
+  block(latch)
+  latch.await()
+}
+
+suspend fun withCountDown(count: Int,
+  parent: Job? = null,
+  block: suspend CountDownLatch.() -> Unit) =
+  withCountDown(count.toLong(), parent, block)
+
+
 

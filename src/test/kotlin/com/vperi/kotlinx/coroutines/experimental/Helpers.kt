@@ -1,9 +1,6 @@
 package com.vperi.kotlinx.coroutines.experimental
 
-import kotlinx.coroutines.experimental.CompletableDeferred
-import kotlinx.coroutines.experimental.Deferred
-import kotlinx.coroutines.experimental.delay
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.experimental.*
 import kotlin.reflect.KClass
 import kotlin.test.assertFailsWith
 
@@ -15,12 +12,14 @@ fun getList(count: Int,
   time: ((Int) -> Long) = { (count - it) * 10L }
 ): List<CompletableDeferred<Int>> {
   val list = listOfCompletableDeferred<Int>(count)
-  list.withIndex().forEachAsync { (i, it) ->
-    delay(time(i))
-    if (i == failAt)
-      it.completeExceptionally(Exception("failed at $i"))
-    else
-      it.complete(i)
+  list.withIndex().forEach { (i, it) ->
+    async {
+      delay(time(i))
+      if (i == failAt)
+        it.completeExceptionally(Exception("failed at $i"))
+      else
+        it.complete(i)
+    }
   }
   return list
 }

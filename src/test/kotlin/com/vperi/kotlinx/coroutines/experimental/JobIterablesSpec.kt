@@ -12,10 +12,10 @@ import org.jetbrains.spek.api.dsl.on
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
-object JobExtSpec : Spek({
+object JobIterablesSpec : Spek({
   val count = 10
 
-  describe("Iterable<Job>.completed") {
+  describe("completed") {
 
     it("closes stream immediately on empty list") {
       val list = getList(0)
@@ -33,7 +33,7 @@ object JobExtSpec : Spek({
     }
   }
 
-  describe("Iterable<Job>.all") {
+  describe("all") {
 
     on("empty list") {
       it("completes immediately") {
@@ -61,7 +61,7 @@ object JobExtSpec : Spek({
 
   }
 
-  describe("Iterable<Job>.race") {
+  describe("race") {
 
     on("empty list") {
       it("never completes") {

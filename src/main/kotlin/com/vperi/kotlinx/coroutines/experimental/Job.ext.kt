@@ -2,27 +2,22 @@
 
 package com.vperi.kotlinx.coroutines.experimental
 
-import kotlinx.coroutines.experimental.Deferred
-import kotlinx.coroutines.experimental.Job
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.experimental.*
+import kotlin.coroutines.experimental.CoroutineContext
 
-/**
- * Suspends until job is complete. Calls [Deferred.await]
- * for [Deferred].
- */
-suspend fun <T : Job> T.awaitCompletion() {
-  when (this) {
-    is Deferred<*> -> this.await()
-    else -> this.join()
-  }
-}
-
-suspend fun <T : Job> T.tryAwaitCompletion() {
+suspend fun <T> Deferred<T>.resultAsync(): Result<T> =
   try {
-    awaitCompletion()
-  } catch (e: Exception) {
+    Result.Success(await())
+  } catch (e: Throwable) {
+    Result.Failure(e)
   }
-}
+
+suspend fun Job.resultAsync(): Result<Unit> =
+  try {
+    Result.Success(join())
+  } catch (e: Throwable) {
+    Result.Failure(e)
+  }
 
 fun <T> Deferred<T>.awaitBlocking(): T {
   return runBlocking {
@@ -57,3 +52,9 @@ val <T : Job> T.failureException: Throwable?
       else -> getCancellationException()
     }
   }
+
+suspend fun <T> resultOfAsync(
+  context: CoroutineContext = DefaultDispatcher,
+  block: suspend () -> T
+): Result<T> =
+  async(context) { block() }.resultAsync()

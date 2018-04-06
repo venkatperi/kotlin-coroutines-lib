@@ -2,34 +2,12 @@
 
 package com.vperi.kotlinx.coroutines.experimental
 
-import kotlinx.coroutines.experimental.CompletableDeferred
-import kotlinx.coroutines.experimental.Deferred
-import kotlinx.coroutines.experimental.Job
-import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.experimental.*
 import kotlinx.coroutines.experimental.channels.ReceiveChannel
 import kotlinx.coroutines.experimental.channels.filter
 import kotlinx.coroutines.experimental.channels.firstOrNull
 import kotlinx.coroutines.experimental.channels.produce
-
-/**
- * Performs the given [action] asynchronously on each element.
- */
-fun <T : Job> Iterable<T>.forEachAsync(action: suspend (T) -> Unit) {
-  forEach {
-    async { action(it) }
-  }
-}
-
-/**
- * Performs the [action] asynchronously on each element as an
- * [IndexedValue].
- */
-@JvmName("indexedAsync")
-fun <T : Job, V : IndexedValue<T>> Iterable<V>.forEachAsync(action: suspend (V) -> Unit) {
-  forEach {
-    async { action(it) }
-  }
-}
+import kotlin.coroutines.experimental.CoroutineContext
 
 /**
  * Returns a [ReceiveChannel] which provides completed jobs from
@@ -40,31 +18,37 @@ fun <T : Job, V : IndexedValue<T>> Iterable<V>.forEachAsync(action: suspend (V) 
  *
  * Consumes all jobs in the given [Iterable]
  */
-fun <T : Job> Iterable<T>.completed(): ReceiveChannel<IndexedValue<T>> =
-  produce {
-    val latch = CountDownLatch(count().toLong())
-    withIndex().forEachAsync {
-      it.value.tryAwaitCompletion()
-      latch.countDown()
-      send(it)
+fun <T : Job> Iterable<T>.completed(
+  context: CoroutineContext = DefaultDispatcher
+): ReceiveChannel<IndexedValue<T>> =
+  produce(context) {
+    withCountDown(count()) {
+      withIndex().forEach {
+        async(coroutineContext) {
+          it.value.resultAsync() //block until result, but ignore it
+          countDown()
+          send(it)
+        }
+      }
     }
-    latch.await()
-    close()
   }
 
 /**
  * Like [completed], returns a [ReceiveChannel] that provides
  * only those jobs that have completed exceptionally or cancelled
  */
-fun <T : Job> Iterable<T>.failed(): ReceiveChannel<IndexedValue<T>> =
-  completed().filter { it.value.failed }
+fun <T : Job> Iterable<T>.failed(
+  context: CoroutineContext = DefaultDispatcher) =
+  completed(context).filter { it.value.failed }
 
 /**
  * Like [completed], returns a [ReceiveChannel] that provides
  * only those jobs that have completed successfully.
  */
-fun <T : Job> Iterable<T>.succeeded(): ReceiveChannel<IndexedValue<T>> =
-  completed().filter { !it.value.failed }
+fun <T : Job> Iterable<T>.succeeded(
+  context: CoroutineContext = DefaultDispatcher
+): ReceiveChannel<IndexedValue<T>> =
+  completed(context).filter { !it.value.failed }
 
 /**
  * Returns a [Deferred] that completes with the index of the
@@ -73,10 +57,12 @@ fun <T : Job> Iterable<T>.succeeded(): ReceiveChannel<IndexedValue<T>> =
  * If the iterable is empty, the returned [Deferred] never
  * completes.
  */
-fun <T : Job> Iterable<T>.race(): Deferred<IndexedValue<T>> =
+fun <T : Job> Iterable<T>.race(
+  context: CoroutineContext = DefaultDispatcher
+): Deferred<IndexedValue<T>> =
   CompletableDeferred<IndexedValue<T>>().apply {
-    async {
-      completed().firstOrNull()?.let {
+    async(context) {
+      completed(context).firstOrNull()?.let {
         when {
           it.value.failed -> completeExceptionally(
             IndexedException(it.index, it.value.failureException!!))
@@ -95,10 +81,12 @@ fun <T : Job> Iterable<T>.race(): Deferred<IndexedValue<T>> =
  * If the [Iterable] is empty, the returned [Deferred]
  * completes immediately.
  */
-fun <T : Job> Iterable<T>.all(): Deferred<Unit> =
+fun <T : Job> Iterable<T>.all(
+  context: CoroutineContext = DefaultDispatcher
+): Deferred<Unit> =
   CompletableDeferred<Unit>().apply {
-    async {
-      failed().firstOrNull()?.let { (i, it) ->
+    async(context) {
+      failed(context).firstOrNull()?.let { (i, it) ->
         completeExceptionally(
           IndexedException(i, it.failureException!!))
       }
@@ -110,10 +98,12 @@ fun <T : Job> Iterable<T>.all(): Deferred<Unit> =
  * Returns completed jobs from the given [Iterable] in
  * a sequentially manner.
  */
-fun <T : Job> Iterable<T>.sequentially(): ReceiveChannel<T> =
-  produce {
+fun <T : Job> Iterable<T>.sequentially(
+  context: CoroutineContext = DefaultDispatcher
+): ReceiveChannel<T> =
+  produce(context) {
     forEach {
-      it.tryAwaitCompletion()
+      it.resultAsync()
       send(it)
     }
     close()

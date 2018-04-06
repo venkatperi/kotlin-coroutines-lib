@@ -2,7 +2,7 @@
 
 # sequentially
 
-`fun <T : Job> `[`Iterable`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-iterable/index.html)`<`[`T`](sequentially.md#T)`>.sequentially(): ReceiveChannel<`[`T`](sequentially.md#T)`>`
+`fun <T : Job> `[`Iterable`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-iterable/index.html)`<`[`T`](sequentially.md#T)`>.sequentially(context: `[`CoroutineContext`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.coroutines.experimental/-coroutine-context/index.html)` = DefaultDispatcher): ReceiveChannel<`[`T`](sequentially.md#T)`>`
 
 Returns completed jobs from the given [Iterable](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-iterable/index.html) in
 a sequentially manner.

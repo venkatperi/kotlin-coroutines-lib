@@ -33,6 +33,24 @@ class CountDownLatchTest {
     }
   }
 
+  @Test
+  fun builder() {
+    val count = 9L
+    val counter = AtomicLong(0)
+    runBlocking {
+      withCountDown(count) {
+        (0 until count).forEach {
+          async {
+            delay(ThreadLocalRandom.current().nextInt(100, 500))
+            counter.incrementAndGet()
+            countDown()
+          }
+        }
+      }
+    }
+    assertEquals(count, counter.get())
+  }
+
   @Test(expected = TimeoutCancellationException::class)
   fun await_timeout_expires() {
     val count = 100L
