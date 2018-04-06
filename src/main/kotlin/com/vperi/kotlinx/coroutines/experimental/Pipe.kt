@@ -1,9 +1,12 @@
 package com.vperi.kotlinx.coroutines.experimental
 
-import kotlinx.coroutines.experimental.*
+import kotlinx.coroutines.experimental.CoroutineStart
+import kotlinx.coroutines.experimental.DefaultDispatcher
+import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.channels.ReceiveChannel
 import kotlinx.coroutines.experimental.channels.SendChannel
 import kotlinx.coroutines.experimental.channels.consumeEach
+import kotlinx.coroutines.experimental.newCoroutineContext
 import kotlin.coroutines.experimental.CoroutineContext
 
 fun <T> ReceiveChannel<T>.pipe(
@@ -18,7 +21,7 @@ fun <E, V> ReceiveChannel<E>.pipe(
   context: CoroutineContext = DefaultDispatcher
 ): ReceiveChannel<V> =
   destination.apply {
-    buildPipe(context, this@pipe, this)
+    buildPipe(context, this@pipe, this@apply)
   }
 
 fun <E> buildPipe(

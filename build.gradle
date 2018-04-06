@@ -81,9 +81,11 @@ dependencies {
   implementation 'com.google.guava:guava:24.0-jre'
   compile "org.jetbrains.kotlinx:kotlinx-coroutines-core:${libs.kotlinx}"
   compile "org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:${libs.kotlinx}"
-  compile "org.jetbrains.kotlinx:kotlinx-coroutines-nio:${libs.kotlinx}"
 
+  compile "org.jetbrains.kotlinx:kotlinx-coroutines-nio:${libs.kotlinx}"
   testCompile "org.jetbrains.kotlin:kotlin-reflect:${libs.kotlin}"
+
+  testCompile "com.thedeanda:lorem:2.1"
 
   testCompile ('org.jetbrains.spek:spek-api:1.1.5') {
     exclude group: 'org.jetbrains.kotlin'
