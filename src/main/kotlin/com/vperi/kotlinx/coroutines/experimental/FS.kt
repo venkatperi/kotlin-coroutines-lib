@@ -31,13 +31,14 @@ class FS {
           val total = input.size()
           var count = 0L
           while (count < total) {
-            val size = min(blockSize, (total - count).toInt())
+            val size = min(blockSize.toLong(), total - count).toInt()
             ByteBuffer.allocate(size).let { buf ->
               count += input.aRead(buf, count)
               channel.send(buf)
             }
           }
         }
+        channel.close()
       }
 
     /**

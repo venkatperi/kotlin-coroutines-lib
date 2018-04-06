@@ -12,8 +12,8 @@ class PipeCoroutine<E>(
   override val destination: SendChannel<E>,
   active: Boolean
 ) : AbstractCoroutine<Unit>(parentContext, active),
-  SendChannel<E> by destination,
   ReceiveChannel<E> by source,
+  SendChannel<E> by destination,
   PipeScope<E> {
 
   override fun onCancellation(cause: Throwable?) {

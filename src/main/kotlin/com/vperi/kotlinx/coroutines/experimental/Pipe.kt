@@ -5,16 +5,14 @@ import kotlinx.coroutines.experimental.DefaultDispatcher
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.channels.ReceiveChannel
 import kotlinx.coroutines.experimental.channels.SendChannel
-import kotlinx.coroutines.experimental.channels.consumeEach
 import kotlinx.coroutines.experimental.newCoroutineContext
 import kotlin.coroutines.experimental.CoroutineContext
 
-fun <T> ReceiveChannel<T>.pipe(
+suspend fun <T> ReceiveChannel<T>.pipe(
   destination: SendChannel<T>,
   context: CoroutineContext = DefaultDispatcher
-) {
-  buildPipe(context, this, destination)
-}
+) =
+  buildPipe(context, this, destination).join()
 
 fun <E, V> ReceiveChannel<E>.pipe(
   destination: TransformChannel<E, V>,
@@ -24,21 +22,24 @@ fun <E, V> ReceiveChannel<E>.pipe(
     buildPipe(context, this@pipe, this@apply)
   }
 
-fun <E> buildPipe(
+internal fun <E> buildPipe(
   context: CoroutineContext = DefaultDispatcher,
   source: ReceiveChannel<E>,
   destination: SendChannel<E>,
   start: CoroutineStart = CoroutineStart.DEFAULT,
-  parent: Job? = null
+  parent: Job? = null,
+  active: Boolean = true
 ): PipeCoroutine<E> =
   PipeCoroutine(
     parentContext = newCoroutineContext(context, parent),
     source = source,
     destination = destination,
-    active = true).apply {
-    this.start(start, this, {
-      source.consumeEach { destination.send(it) }
-      destination.close()
+    active = active
+  ).apply {
+    start(start, this, {
+      source.consumeEachWithStats { destination.sendWithStats(it) }
     })
+    finally {
+      destination.close()
+    }
   }
-

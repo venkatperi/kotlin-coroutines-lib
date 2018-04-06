@@ -4,7 +4,6 @@ import kotlinx.coroutines.experimental.AbstractCoroutine
 import kotlinx.coroutines.experimental.channels.Channel
 import kotlinx.coroutines.experimental.channels.ReceiveChannel
 import kotlinx.coroutines.experimental.channels.SendChannel
-import kotlinx.coroutines.experimental.channels.actor
 import kotlinx.coroutines.experimental.handleCoroutineException
 import kotlin.coroutines.experimental.CoroutineContext
 

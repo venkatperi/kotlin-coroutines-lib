@@ -24,6 +24,22 @@ fun Job.then(
     }
   }
 
+fun Job.finally(
+  context: CoroutineContext = DefaultDispatcher,
+  parent: Job? = null,
+  handler: suspend (Result<Unit>) -> Unit
+): AfterCoroutine<Unit> =
+  AfterCoroutine<Unit>(
+    newCoroutineContext(context, parent),
+    true).apply {
+    val startType = CoroutineStart.DEFAULT
+    this@finally.invokeOnCompletion { err ->
+      this.start(startType, this, {
+        handler(if (err == null) resultOf(Unit) else resultOf(err))
+      })
+    }
+  }
+
 fun Job.then(
   context: CoroutineContext = DefaultDispatcher,
   parent: Job? = null,

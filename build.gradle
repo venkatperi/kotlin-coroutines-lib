@@ -81,8 +81,10 @@ dependencies {
   implementation 'com.google.guava:guava:24.0-jre'
   compile "org.jetbrains.kotlinx:kotlinx-coroutines-core:${libs.kotlinx}"
   compile "org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:${libs.kotlinx}"
-
   compile "org.jetbrains.kotlinx:kotlinx-coroutines-nio:${libs.kotlinx}"
+
+  compile 'com.vperi:kotlin-util:1.0.2'
+
   testCompile "org.jetbrains.kotlin:kotlin-reflect:${libs.kotlin}"
 
   testCompile "com.thedeanda:lorem:2.1"
