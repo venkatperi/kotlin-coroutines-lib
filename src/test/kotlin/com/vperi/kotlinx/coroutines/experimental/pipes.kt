@@ -9,7 +9,6 @@ import kotlinx.coroutines.experimental.runBlocking
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
-import sun.management.snmp.jvminstr.JvmThreadInstanceEntryImpl.ThreadStateMap.Byte1.other
 import java.lang.Integer.max
 import java.nio.ByteBuffer
 import java.nio.charset.StandardCharsets
@@ -20,10 +19,11 @@ fun ByteBuffer.decodeUtf8(): String {
   return String(array(), StandardCharsets.UTF_8)
 }
 
-suspend fun <T> printer() =
-  actor<T>(coroutineContext) {
-    for (x in channel) {
-      println(x)
+suspend fun <T> spy(block: suspend (T) -> Unit) =
+  transform<T, T>(coroutineContext) {
+    input.consumeEach {
+      output.send(it)
+      block(it)
     }
   }
 
@@ -61,7 +61,7 @@ fun splitLines() = transform<String, String> {
     }
 
     toSend.forEach {
-      output.send("${count++}: $it")
+      output.send(it)
     }
   }
 }
@@ -99,6 +99,7 @@ class PipesTest {
       FS.createReader(inputFile.toPath())
         .pipe(decodeUtf8())
         .pipe(splitLines())
+        .pipe(spy({ println("> $it") }))
         .pipe(contents({
           assertEquals(lines.size, it.size)
         }))
