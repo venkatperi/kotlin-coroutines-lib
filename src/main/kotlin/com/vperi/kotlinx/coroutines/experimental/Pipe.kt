@@ -39,26 +39,3 @@ fun <E> buildPipe(
     })
   }
 
-interface PipeScope<E> : CoroutineScope {
-  val source: ReceiveChannel<E>
-  val destination: SendChannel<E>
-}
-
-class PipeCoroutine<E>(
-  parentContext: CoroutineContext,
-  override val source: ReceiveChannel<E>,
-  override val destination: SendChannel<E>,
-  active: Boolean
-) : AbstractCoroutine<Unit>(parentContext, active),
-  SendChannel<E> by destination,
-  ReceiveChannel<E> by source,
-  PipeScope<E> {
-
-  override fun onCancellation(cause: Throwable?) {
-    if (!source.cancel(cause) && cause != null)
-      handleCoroutineException(context, cause)
-  }
-
-  override fun cancel(cause: Throwable?): Boolean =
-    source.cancel(cause)
-}
