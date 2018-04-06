@@ -3,7 +3,6 @@ package com.vperi.kotlinx.coroutines.experimental
 import com.google.common.io.Files
 import com.thedeanda.lorem.Lorem
 import com.thedeanda.lorem.LoremIpsum
-import kotlinx.coroutines.experimental.channels.actor
 import kotlinx.coroutines.experimental.channels.consumeEach
 import kotlinx.coroutines.experimental.runBlocking
 import org.junit.Rule
@@ -12,29 +11,11 @@ import org.junit.rules.TemporaryFolder
 import java.lang.Integer.max
 import java.nio.ByteBuffer
 import java.nio.charset.StandardCharsets
-import kotlin.coroutines.experimental.coroutineContext
 import kotlin.test.assertEquals
 
 fun ByteBuffer.decodeUtf8(): String {
   return String(array(), StandardCharsets.UTF_8)
 }
-
-suspend fun <T> spy(block: suspend (T) -> Unit) =
-  transform<T, T>(coroutineContext) {
-    input.consumeEach {
-      output.send(it)
-      block(it)
-    }
-  }
-
-suspend fun <T> contents(callback: suspend (List<T>) -> Unit) =
-  actor<T>(coroutineContext) {
-    val elements = ArrayList<T>()
-    channel.consumeEach {
-      elements.add(it)
-    }
-    callback(elements)
-  }
 
 fun decodeUtf8() = transform<ByteBuffer, String> {
   input.consumeEach {
@@ -43,7 +24,6 @@ fun decodeUtf8() = transform<ByteBuffer, String> {
 }
 
 fun splitLines() = transform<String, String> {
-  var count = 0
   val pattern = "\n"
   var prev = ""
 
@@ -99,10 +79,12 @@ class PipesTest {
       FS.createReader(inputFile.toPath())
         .pipe(decodeUtf8())
         .pipe(splitLines())
-        .pipe(spy({ println("> $it") }))
+//        .pipe(spy({ println("> $it") }))
         .pipe(contents({
           assertEquals(lines.size, it.size)
         }))
+        .pipe(nullActor())
+
     }
   }
 
