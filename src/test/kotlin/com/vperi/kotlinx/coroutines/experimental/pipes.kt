@@ -5,7 +5,8 @@ import com.thedeanda.lorem.Lorem
 import com.thedeanda.lorem.LoremIpsum
 import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.channels.Channel
-import kotlinx.coroutines.experimental.channels.consumeEach
+import kotlinx.coroutines.experimental.channels.actor
+import kotlinx.coroutines.experimental.channels.count
 import kotlinx.coroutines.experimental.runBlocking
 import org.junit.Rule
 import org.junit.Test
@@ -40,29 +41,28 @@ class PipesTest {
   fun transform1() {
     val inputFile = tmpDir.newFile()
     val data = lorem.getParagraphs(10000, 20000)
-//    val data = (0 until 10000).joinToString("\n") { "abcd" }
     val lines = data.split("\n")
     Files.asCharSink(inputFile, StandardCharsets.UTF_8).write(data)
 
     runBlocking {
       val listener = Channel<String>()
       val count = async(coroutineContext) {
-        var count = 0
-        listener.consumeEach { count++ }
-        count
+        listener.count()
       }
 
       val splitter = splitLines(coroutineContext)
+      val teeListener = tee(listener, context = coroutineContext)
       FS.createReader(inputFile.toPath())
         .pipe(decodeUtf8(coroutineContext))
         .pipe(splitter)
-        .pipe(tee(listener))
+        .pipe(teeListener)
         .pipe(contents(coroutineContext, {
           assertEquals(lines.size, it.size)
         }))
         .pipe(nullActor(coroutineContext))
 
       assertEquals(lines.size, count.await())
+      assertCount(teeListener, lines.size.toLong())
     }
   }
 
