@@ -1,5 +1,8 @@
 package com.vperi.kotlinx.coroutines.experimental
 
+import com.vperi.kotlinx.coroutines.experimental.coroutine.pipe
+import com.vperi.kotlinx.coroutines.experimental.util.contents
+import com.vperi.kotlinx.coroutines.experimental.util.nullActor
 import kotlinx.coroutines.experimental.runBlocking
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe

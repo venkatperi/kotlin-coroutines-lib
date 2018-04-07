@@ -1,5 +1,7 @@
 package com.vperi.kotlinx.coroutines.experimental
 
+import com.vperi.kotlinx.coroutines.experimental.sync.CountDownLatch
+import com.vperi.kotlinx.coroutines.experimental.sync.withCountDown
 import kotlinx.coroutines.experimental.*
 import org.junit.Test
 import java.util.concurrent.ThreadLocalRandom

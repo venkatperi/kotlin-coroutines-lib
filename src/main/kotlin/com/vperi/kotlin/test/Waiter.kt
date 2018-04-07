@@ -1,6 +1,8 @@
+@file:Suppress("unused")
+
 package com.vperi.kotlin.test
 
-import com.vperi.kotlinx.coroutines.experimental.CountDownLatch
+import com.vperi.kotlinx.coroutines.experimental.sync.CountDownLatch
 import kotlinx.coroutines.experimental.runBlocking
 import kotlinx.coroutines.experimental.withTimeout
 import java.util.concurrent.TimeUnit

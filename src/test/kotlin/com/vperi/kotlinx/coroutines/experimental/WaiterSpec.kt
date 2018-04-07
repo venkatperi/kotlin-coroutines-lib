@@ -26,7 +26,7 @@ object WaiterSpec : Spek({
       val waiter = Waiter()
       assertFailsWith(TimeoutCancellationException::class, {
         runBlocking {
-          waiter.await(100)
+          waiter.await(500)
         }
       })
     }

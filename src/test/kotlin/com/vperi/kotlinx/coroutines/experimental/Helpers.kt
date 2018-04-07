@@ -1,5 +1,7 @@
 package com.vperi.kotlinx.coroutines.experimental
 
+import com.vperi.kotlinx.coroutines.experimental.util.sendWithStats
+import com.vperi.kotlinx.coroutines.experimental.util.stats
 import kotlinx.coroutines.experimental.*
 import kotlinx.coroutines.experimental.channels.ReceiveChannel
 import kotlinx.coroutines.experimental.channels.SendChannel

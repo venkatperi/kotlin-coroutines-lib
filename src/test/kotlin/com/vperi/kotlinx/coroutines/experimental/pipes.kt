@@ -3,9 +3,10 @@ package com.vperi.kotlinx.coroutines.experimental
 import com.google.common.io.Files
 import com.thedeanda.lorem.Lorem
 import com.thedeanda.lorem.LoremIpsum
+import com.vperi.kotlinx.coroutines.experimental.coroutine.pipe
+import com.vperi.kotlinx.coroutines.experimental.util.*
 import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.channels.Channel
-import kotlinx.coroutines.experimental.channels.actor
 import kotlinx.coroutines.experimental.channels.count
 import kotlinx.coroutines.experimental.runBlocking
 import org.junit.Rule
@@ -19,7 +20,7 @@ class PipesTest {
   @get:Rule
   val tmpDir = TemporaryFolder()
 
-  var lorem: Lorem = LoremIpsum.getInstance()
+  private var lorem: Lorem = LoremIpsum.getInstance()
 
   @Test
   fun pipe_test() {
