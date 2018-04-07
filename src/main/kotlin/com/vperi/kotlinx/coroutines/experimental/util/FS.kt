@@ -18,12 +18,19 @@ class FS {
   companion object {
 
     /**
-     * Returns a [ReceiveChannel] for the given [file] for reading
+     * Returns a [ReceiveChannel] for the given [file] for reading.
+     *
+     * @param file The file to read from
+     * @param options see [OpenOption]
+     * @param context the coroutine context
+     * @param blockSize Bytes per read.
+     * @param allocator Source of [ByteBuffer]. Default is alloc as needed.
      */
     fun createReader(
       file: Path,
       vararg options: OpenOption,
       blockSize: Int = 1024,
+      allocator: (Int) -> ByteBuffer = { ByteBuffer.allocate(it) },
       context: CoroutineContext = DefaultDispatcher
     ): ReceiveChannel<ByteBuffer> =
       produce(context) {
@@ -32,7 +39,7 @@ class FS {
           var count = 0L
           while (count < total) {
             val size = min(blockSize.toLong(), total - count).toInt()
-            ByteBuffer.allocate(size).let { buf ->
+            allocator(size).let { buf ->
               count += input.aRead(buf, count)
               channel.send(buf)
             }
