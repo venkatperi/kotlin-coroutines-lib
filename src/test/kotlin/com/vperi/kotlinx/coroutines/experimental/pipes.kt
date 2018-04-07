@@ -39,8 +39,8 @@ class PipesTest {
   @Test
   fun transform1() {
     val inputFile = tmpDir.newFile()
-//    val data = lorem.getParagraphs(1000, 2000)
-    val data = (0 until 10000).joinToString("\n") { "$it" }
+    val data = lorem.getParagraphs(10000, 20000)
+//    val data = (0 until 10000).joinToString("\n") { "abcd" }
     val lines = data.split("\n")
     Files.asCharSink(inputFile, StandardCharsets.UTF_8).write(data)
 
@@ -62,7 +62,7 @@ class PipesTest {
         }))
         .pipe(nullActor(coroutineContext))
 
-//      assertEquals(lines.size, count.await())
+      assertEquals(lines.size, count.await())
     }
   }
 

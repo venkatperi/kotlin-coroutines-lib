@@ -8,6 +8,7 @@ import kotlinx.coroutines.experimental.channels.ReceiveChannel
 import kotlinx.coroutines.experimental.channels.SendChannel
 import kotlinx.coroutines.experimental.channels.actor
 import kotlinx.coroutines.experimental.channels.consume
+import java.lang.Integer.max
 import java.nio.ByteBuffer
 import java.nio.charset.StandardCharsets
 import kotlin.coroutines.experimental.CoroutineContext
@@ -44,7 +45,10 @@ fun <T> tee(
       output.sendWithStats(it)
       listener.sendWithStats(it)
     }
-    listener.close()
+  }.apply {
+    finally(context) {
+      listener.close()
+    }
   }
 
 fun <T> contents(
@@ -58,14 +62,23 @@ fun <T> contents(
       output.sendWithStats(it)
     }
   }.apply {
-    then {
-      callback(elements)
+    then(context) {
+      try {
+        callback(elements)
+      } catch (e: Exception) {
+        this@apply.cancel(e)
+        throw e
+      }
     }
   }
 }
 
 fun ByteBuffer.decodeUtf8(): String {
-  return String(array(), StandardCharsets.UTF_8)
+//  return String(array(), StandardCharsets.UTF_8)
+  flip()
+  val bytes = ByteArray(remaining())
+  get(bytes)
+  return String(bytes, StandardCharsets.UTF_8)
 }
 
 fun decodeUtf8(context: CoroutineContext = DefaultDispatcher) =
@@ -81,23 +94,15 @@ fun splitLines(context: CoroutineContext = DefaultDispatcher) =
     var prev = ""
 
     input.consumeEachWithStats {
-      val endsWithNL = it.endsWith(pattern)
-      val lines = (prev + it).split(pattern)
+      (prev + it).split(pattern).let { lines ->
+        prev = lines.last()
 
-      var toSend = listOf<String>()
-      when {
-        !endsWithNL -> {
-          toSend += lines.subList(0, lines.size - 1)
-          prev = lines[lines.size - 1]
+        lines.take(max(0, lines.size - 1)).forEach {
+          output.sendWithStats(it)
         }
-        else -> {
-          toSend += lines
-          prev = ""
-        }
-      }
-
-      toSend.forEach {
-        output.sendWithStats(it)
       }
     }
+
+    if (prev.isNotBlank())
+      output.sendWithStats(prev)
   }

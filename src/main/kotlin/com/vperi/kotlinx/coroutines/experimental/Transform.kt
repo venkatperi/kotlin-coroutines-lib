@@ -38,5 +38,8 @@ internal fun <E, V> transformBuilder(
     active = active
   ).apply {
     start(start, this, block)
+    finally {
+      output.close()
+    }
   }
 

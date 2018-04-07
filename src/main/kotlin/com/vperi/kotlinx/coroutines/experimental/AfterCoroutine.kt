@@ -6,19 +6,20 @@ import kotlin.coroutines.experimental.CoroutineContext
 fun Job.then(
   context: CoroutineContext = DefaultDispatcher,
   parent: Job? = null,
-  success: suspend () -> Unit,
-  failure: (suspend (Throwable) -> Unit)?
+  successHandler: suspend () -> Unit,
+  failureHandler: (suspend (Throwable) -> Unit)?
 ): AfterCoroutine<Unit> =
   AfterCoroutine<Unit>(
     newCoroutineContext(context, parent),
-    true).apply {
+    true
+  ).apply {
     val startType = CoroutineStart.DEFAULT
     this@then.invokeOnCompletion { err ->
       when (err) {
-        null -> this.start(startType, this, { success() })
-        else -> when (failure) {
+        null -> this.start(startType, this, { successHandler() })
+        else -> when (failureHandler) {
           null -> this.cancel(err)
-          else -> this.start(startType, this, { failure(err) })
+          else -> this.start(startType, this, { failureHandler(err) })
         }
       }
     }

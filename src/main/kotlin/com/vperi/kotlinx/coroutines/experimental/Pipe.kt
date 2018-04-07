@@ -39,7 +39,7 @@ internal fun <E> buildPipe(
     start(start, this, {
       source.consumeEachWithStats { destination.sendWithStats(it) }
     })
-    finally {
+    finally(context) {
       destination.close()
     }
   }
