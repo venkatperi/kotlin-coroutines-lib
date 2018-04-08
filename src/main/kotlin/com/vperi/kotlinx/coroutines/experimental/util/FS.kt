@@ -31,9 +31,12 @@ class FS {
       vararg options: OpenOption,
       blockSize: Int = 1024,
       allocator: (Int) -> ByteBuffer = { ByteBuffer.allocate(it) },
+      capacity: Int = 0,
       context: CoroutineContext = DefaultDispatcher
     ): ReceiveChannel<ByteBuffer> =
-      produce(context) {
+      produce(
+        context = context,
+        capacity = capacity) {
         AsynchronousFileChannel.open(file, *options).use { input ->
           val total = input.size()
           var count = 0L

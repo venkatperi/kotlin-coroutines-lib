@@ -6,20 +6,29 @@ import com.vperi.kotlinx.coroutines.experimental.coroutine.TransformCoroutine
 import com.vperi.kotlinx.coroutines.experimental.coroutine.then
 import com.vperi.kotlinx.coroutines.experimental.coroutine.transform
 import kotlinx.coroutines.experimental.DefaultDispatcher
+import kotlinx.coroutines.experimental.channels.ReceiveChannel
 import kotlinx.coroutines.experimental.channels.SendChannel
 import kotlinx.coroutines.experimental.channels.actor
+import kotlinx.coroutines.experimental.channels.produce
 import java.lang.Integer.max
 import java.nio.ByteBuffer
 import java.util.concurrent.ConcurrentLinkedQueue
 import kotlin.coroutines.experimental.CoroutineContext
+
+fun <T> produce(items: Iterable<T>): ReceiveChannel<T> =
+  produce {
+    items.forEach { send(it) }
+  }
 
 /**
  * Returns a [SendChannel].
  *
  * Consumes all messages sent to it, ignoring them.
  */
-suspend fun <T> nullActor(context: CoroutineContext = DefaultDispatcher) =
-  actor<T>(context) {
+suspend fun <T> nullActor(
+  context: CoroutineContext = DefaultDispatcher,
+  capacity: Int = 0) =
+  actor<T>(context, capacity = capacity) {
     channel.consumeEachWithStats {}
   }
 

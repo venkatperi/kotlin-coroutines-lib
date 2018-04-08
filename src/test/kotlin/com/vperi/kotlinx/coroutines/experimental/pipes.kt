@@ -39,6 +39,25 @@ class PipesTest {
   }
 
   @Test
+  fun pipe_test2() {
+    val count = 50000
+    val data = (0 until count)
+
+    runBlocking {
+      val listener = Channel<Int>()
+      val counter = async(coroutineContext) {
+        listener.count()
+      }
+
+      produce(data)
+        .pipe(tee(listener))
+        .pipe(nullActor(coroutineContext))
+
+      assertEquals(count, counter.await())
+    }
+  }
+
+  @Test
   fun transform1() {
     val inputFile = tmpDir.newFile()
     val data = lorem.getParagraphs(10000, 20000)
