@@ -65,7 +65,7 @@ fun <E, V> ReceiveChannel<E>.pipe(
   context: CoroutineContext = DefaultDispatcher,
   parent: Job? = null
 ): JobWithReceiveChannel<V> =
-  PipeCoroutine2(
+  IntermediatePipeCoroutine(
     parentContext = newCoroutineContext(context, parent),
     source = this,
     next = destination,
