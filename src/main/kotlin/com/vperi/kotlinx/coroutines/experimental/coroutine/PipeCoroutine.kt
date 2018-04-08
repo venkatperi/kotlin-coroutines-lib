@@ -8,13 +8,26 @@ import kotlin.coroutines.experimental.CoroutineContext
 
 class PipeCoroutine<E>(
   parentContext: CoroutineContext,
-  override val source: ReceiveChannel<E>,
-  override val destination: SendChannel<E>,
+  val source: ReceiveChannel<E>,
+  @Suppress("unused") val destination: SendChannel<E>,
   active: Boolean
-) : AbstractCoroutine<Unit>(parentContext, active),
-  ReceiveChannel<E> by source,
-  SendChannel<E> by destination,
-  PipeScope<E> {
+) : AbstractCoroutine<Unit>(parentContext, active) {
+
+  override fun onCancellation(cause: Throwable?) {
+    if (!source.cancel(cause) && cause != null)
+      handleCoroutineException(context, cause)
+  }
+
+  override fun cancel(cause: Throwable?): Boolean =
+    source.cancel(cause)
+}
+
+class PipeCoroutine2<out E, out V>(
+  parentContext: CoroutineContext,
+  private val source: ReceiveChannel<E>,
+  next: ReceiveChannel<V>,
+  active: Boolean
+) : JobWithReceiveChannel<V>(parentContext, active, next) {
 
   override fun onCancellation(cause: Throwable?) {
     if (!source.cancel(cause) && cause != null)

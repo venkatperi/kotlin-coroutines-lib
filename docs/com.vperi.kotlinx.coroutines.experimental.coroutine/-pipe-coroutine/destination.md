@@ -3,6 +3,3 @@
 # destination
 
 `val destination: SendChannel<`[`E`](index.md#E)`>`
-
-Overrides [PipeScope.destination](../-pipe-scope/destination.md)
-

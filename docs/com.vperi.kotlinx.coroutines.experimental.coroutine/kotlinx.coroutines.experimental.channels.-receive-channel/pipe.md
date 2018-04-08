@@ -2,7 +2,7 @@
 
 # pipe
 
-`suspend fun <T> ReceiveChannel<`[`T`](pipe.md#T)`>.pipe(destination: SendChannel<`[`T`](pipe.md#T)`>, context: `[`CoroutineContext`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.coroutines.experimental/-coroutine-context/index.html)` = DefaultDispatcher): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html)
+`fun <T> ReceiveChannel<`[`T`](pipe.md#T)`>.pipe(destination: SendChannel<`[`T`](pipe.md#T)`>, context: `[`CoroutineContext`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.coroutines.experimental/-coroutine-context/index.html)` = DefaultDispatcher): Job`
 
 Creates a message pipe between an upstream [Channel](#) and a terminating
 downstream [SendChannel](#).
@@ -17,7 +17,7 @@ Waits until all messages are drained from the upstream [ReceiveChannel](#).
 
 `context` - context of the coroutine. The default value is [DefaultDispatcher](#).
 
-`destination` - the downstream [SendChannel](#).`fun <E, V> ReceiveChannel<`[`E`](pipe.md#E)`>.pipe(destination: `[`TransformChannel`](../-transform-channel.md)`<`[`E`](pipe.md#E)`, `[`V`](pipe.md#V)`>, context: `[`CoroutineContext`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.coroutines.experimental/-coroutine-context/index.html)` = DefaultDispatcher): ReceiveChannel<`[`V`](pipe.md#V)`>`
+`destination` - the downstream [SendChannel](#).`fun <E, V> ReceiveChannel<`[`E`](pipe.md#E)`>.pipe(destination: `[`TransformChannel`](../-transform-channel.md)`<`[`E`](pipe.md#E)`, `[`V`](pipe.md#V)`>, context: `[`CoroutineContext`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.coroutines.experimental/-coroutine-context/index.html)` = DefaultDispatcher, parent: Job? = null): `[`JobWithReceiveChannel`](../-job-with-receive-channel/index.md)`<`[`V`](pipe.md#V)`>`
 
 Creates a message pipe between an upstream [Channel](#) and an intermediate
 downstream [TransformChannel](../-transform-channel.md).

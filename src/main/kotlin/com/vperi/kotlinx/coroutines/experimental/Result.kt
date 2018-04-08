@@ -42,8 +42,11 @@ sealed class Result<out T> {
 fun <T> resultOf(value: T): Result<T> =
   Result.Success(value)
 
-fun resultOf(error: Throwable): Result<Unit> =
-  Result.Failure(error)
+fun resultOf(error: Throwable?): Result<Unit> =
+  when (error) {
+    null -> resultOf(Unit)
+    else -> Result.Failure(error)
+  }
 
 fun <T> resultOf(block: () -> T): Result<T> =
   try {

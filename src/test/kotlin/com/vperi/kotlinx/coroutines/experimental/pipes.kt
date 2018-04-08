@@ -29,12 +29,12 @@ class PipesTest {
     Files.asCharSink(inputFile, StandardCharsets.UTF_8).write(data)
 
     runBlocking {
-      FS.createReader(inputFile.toPath(), context = coroutineContext)
-        .pipe(decodeUtf8(coroutineContext))
-        .pipe(contents(coroutineContext, {
+      FS.createReader(inputFile.toPath())
+        .pipe(decodeUtf8())
+        .pipe(contents {
           assertEquals(data, it.joinToString { "" })
-        }))
-        .pipe(nullActor(coroutineContext))
+        })
+        .drainAndJoin()
     }
   }
 
@@ -45,15 +45,29 @@ class PipesTest {
 
     runBlocking {
       val listener = Channel<Int>()
-      val counter = async(coroutineContext) {
+      val counter = async {
         listener.count()
       }
 
       produce(data)
         .pipe(tee(listener))
-        .pipe(nullActor(coroutineContext))
+        .drainAndJoin()
 
       assertEquals(count, counter.await())
+    }
+  }
+
+  @Test
+  fun write_to_file() {
+    val file = tmpDir.newFile()
+    val count = 50000
+    val data = (0 until count).map { "$it" }
+
+    runBlocking {
+      produce(data)
+        .pipe(encodeUtf8())
+        .pipe(FS.createWriter(file.toPath()))
+        .join()
     }
   }
 
@@ -66,23 +80,23 @@ class PipesTest {
 
     runBlocking {
       val listener = Channel<String>()
-      val count = async(coroutineContext) {
+      val count = async {
         listener.count()
       }
 
-      val splitter = splitLines(coroutineContext)
-      val teeListener = tee(listener, context = coroutineContext)
+      val splitter = splitLines()
+      val teeListener = tee(listener)
       FS.createReader(inputFile.toPath())
-        .pipe(decodeUtf8(coroutineContext))
+        .pipe(decodeUtf8())
         .pipe(splitter)
         .pipe(teeListener)
-        .pipe(contents(coroutineContext, {
+        .pipe(contents {
           assertEquals(lines.size, it.size)
-        }))
-        .pipe(nullActor(coroutineContext))
+        })
+        .drainAndJoin()
 
       assertEquals(lines.size, count.await())
-      assertCount(teeListener, lines.size.toLong())
+//      assertCount(teeListener, lines.size.toLong())
     }
   }
 

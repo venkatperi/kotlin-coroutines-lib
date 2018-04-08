@@ -35,5 +35,5 @@
 
 | Name | Summary |
 |---|---|
-| [resultOf](result-of.md) | `fun <T> resultOf(value: `[`T`](result-of.md#T)`): `[`Result`](-result/index.md)`<`[`T`](result-of.md#T)`>`<br>`fun resultOf(error: `[`Throwable`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-throwable/index.html)`): `[`Result`](-result/index.md)`<`[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html)`>`<br>`fun <T> resultOf(block: () -> `[`T`](result-of.md#T)`): `[`Result`](-result/index.md)`<`[`T`](result-of.md#T)`>` |
+| [resultOf](result-of.md) | `fun <T> resultOf(value: `[`T`](result-of.md#T)`): `[`Result`](-result/index.md)`<`[`T`](result-of.md#T)`>`<br>`fun resultOf(error: `[`Throwable`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-throwable/index.html)`?): `[`Result`](-result/index.md)`<`[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html)`>`<br>`fun <T> resultOf(block: () -> `[`T`](result-of.md#T)`): `[`Result`](-result/index.md)`<`[`T`](result-of.md#T)`>` |
 | [resultOfAsync](result-of-async.md) | `suspend fun <T> resultOfAsync(context: `[`CoroutineContext`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.coroutines.experimental/-coroutine-context/index.html)` = DefaultDispatcher, block: suspend () -> `[`T`](result-of-async.md#T)`): `[`Result`](-result/index.md)`<`[`T`](result-of-async.md#T)`>` |

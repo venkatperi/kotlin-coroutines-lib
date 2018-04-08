@@ -3,6 +3,3 @@
 # source
 
 `val source: ReceiveChannel<`[`E`](index.md#E)`>`
-
-Overrides [PipeScope.source](../-pipe-scope/source.md)
-

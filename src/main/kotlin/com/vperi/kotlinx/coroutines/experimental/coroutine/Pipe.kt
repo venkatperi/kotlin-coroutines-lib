@@ -27,10 +27,23 @@ import kotlin.coroutines.experimental.CoroutineContext
  * @param destination the downstream [SendChannel].
  *
  */
-suspend fun <T> ReceiveChannel<T>.pipe(
+fun <T> ReceiveChannel<T>.pipe(
   destination: SendChannel<T>,
-  context: CoroutineContext = DefaultDispatcher) =
-  buildPipe(context, this, destination).join()
+  context: CoroutineContext = DefaultDispatcher): Job =
+  PipeCoroutine(
+    parentContext = newCoroutineContext(context, null),
+    source = this,
+    destination = destination,
+    active = true
+  ).apply {
+    this.start(kotlinx.coroutines.experimental.CoroutineStart.DEFAULT,
+      this, {
+      source.consumeEachWithStats { destination.sendWithStats(it) }
+    })
+    finally(context) {
+      destination.close()
+    }
+  }
 
 /**
  * Creates a message pipe between an upstream [Channel] and an intermediate
@@ -49,30 +62,20 @@ suspend fun <T> ReceiveChannel<T>.pipe(
  */
 fun <E, V> ReceiveChannel<E>.pipe(
   destination: TransformChannel<E, V>,
-  context: CoroutineContext = DefaultDispatcher
-): ReceiveChannel<V> =
-  destination.apply {
-    buildPipe(context, this@pipe, this@apply)
-  }
-
-internal fun <E> buildPipe(
   context: CoroutineContext = DefaultDispatcher,
-  source: ReceiveChannel<E>,
-  destination: SendChannel<E>,
-  start: CoroutineStart = CoroutineStart.DEFAULT,
-  parent: Job? = null,
-  active: Boolean = true
-): PipeCoroutine<E> =
-  PipeCoroutine(
+  parent: Job? = null
+): JobWithReceiveChannel<V> =
+  PipeCoroutine2(
     parentContext = newCoroutineContext(context, parent),
-    source = source,
-    destination = destination,
-    active = active
+    source = this,
+    next = destination,
+    active = true
   ).apply {
-    start(start, this, {
-      source.consumeEachWithStats { destination.sendWithStats(it) }
+    this.start(CoroutineStart.DEFAULT, this@pipe, {
+      consumeEachWithStats { destination.sendWithStats(it) }
     })
     finally(context) {
       destination.close()
     }
   }
+

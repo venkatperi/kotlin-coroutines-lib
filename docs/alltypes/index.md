@@ -8,7 +8,7 @@
 |---|---|
 | [com.vperi.kotlinx.coroutines.experimental.sync.AbstractLatch](../com.vperi.kotlinx.coroutines.experimental.sync/-abstract-latch/index.md) |  |
 | [com.vperi.kotlinx.coroutines.experimental.sync.AbstractTrigger](../com.vperi.kotlinx.coroutines.experimental.sync/-abstract-trigger/index.md) |  |
-| [com.vperi.kotlinx.coroutines.experimental.coroutine.AfterCoroutine](../com.vperi.kotlinx.coroutines.experimental.coroutine/-after-coroutine/index.md) |  |
+| [com.vperi.kotlinx.coroutines.experimental.coroutine.AfterScope](../com.vperi.kotlinx.coroutines.experimental.coroutine/-after-scope/index.md) |  |
 | [java.nio.ByteBuffer](../com.vperi.kotlinx.coroutines.experimental.util/java.nio.-byte-buffer/index.md) (extensions in package com.vperi.kotlinx.coroutines.experimental.util) |  |
 | [com.vperi.kotlinx.coroutines.experimental.ChannelStats](../com.vperi.kotlinx.coroutines.experimental/-channel-stats/index.md) |  |
 | [com.vperi.kotlinx.coroutines.experimental.sync.CountDownLatch](../com.vperi.kotlinx.coroutines.experimental.sync/-count-down-latch/index.md) | A synchronization aid that allows one or more coroutines to wait without blocking until a set of operations being performed in other coroutines complete. |
@@ -21,12 +21,14 @@
 | [kotlin.collections.Iterable](../com.vperi.kotlinx.coroutines.experimental/kotlin.collections.-iterable/index.md) (extensions in package com.vperi.kotlinx.coroutines.experimental) |  |
 | [kotlinx.coroutines.experimental.Job](../com.vperi.kotlinx.coroutines.experimental/kotlinx.coroutines.experimental.-job/index.md) (extensions in package com.vperi.kotlinx.coroutines.experimental) |  |
 | [kotlinx.coroutines.experimental.Job](../com.vperi.kotlinx.coroutines.experimental.coroutine/kotlinx.coroutines.experimental.-job/index.md) (extensions in package com.vperi.kotlinx.coroutines.experimental.coroutine) |  |
+| [com.vperi.kotlinx.coroutines.experimental.coroutine.JobWithReceiveChannel](../com.vperi.kotlinx.coroutines.experimental.coroutine/-job-with-receive-channel/index.md) |  |
 | [com.vperi.kotlinx.coroutines.experimental.coroutine.PipeCoroutine](../com.vperi.kotlinx.coroutines.experimental.coroutine/-pipe-coroutine/index.md) |  |
-| [com.vperi.kotlinx.coroutines.experimental.coroutine.PipeScope](../com.vperi.kotlinx.coroutines.experimental.coroutine/-pipe-scope/index.md) |  |
+| [com.vperi.kotlinx.coroutines.experimental.coroutine.PipeCoroutine2](../com.vperi.kotlinx.coroutines.experimental.coroutine/-pipe-coroutine2/index.md) |  |
 | [kotlinx.coroutines.experimental.channels.ReceiveChannel](../com.vperi.kotlinx.coroutines.experimental.coroutine/kotlinx.coroutines.experimental.channels.-receive-channel/index.md) (extensions in package com.vperi.kotlinx.coroutines.experimental.coroutine) |  |
 | [kotlinx.coroutines.experimental.channels.ReceiveChannel](../com.vperi.kotlinx.coroutines.experimental.util/kotlinx.coroutines.experimental.channels.-receive-channel/index.md) (extensions in package com.vperi.kotlinx.coroutines.experimental.util) |  |
 | [com.vperi.kotlinx.coroutines.experimental.Result](../com.vperi.kotlinx.coroutines.experimental/-result/index.md) | Represents the result of a Job/Deferred |
 | [kotlinx.coroutines.experimental.channels.SendChannel](../com.vperi.kotlinx.coroutines.experimental.util/kotlinx.coroutines.experimental.channels.-send-channel/index.md) (extensions in package com.vperi.kotlinx.coroutines.experimental.util) |  |
+| [kotlin.String](../com.vperi.kotlinx.coroutines.experimental.util/kotlin.-string/index.md) (extensions in package com.vperi.kotlinx.coroutines.experimental.util) |  |
 | [com.vperi.kotlinx.coroutines.experimental.coroutine.TransformChannel](../com.vperi.kotlinx.coroutines.experimental.coroutine/-transform-channel.md) | External interface to a transform channel as seen by users of the channel. |
 | [com.vperi.kotlinx.coroutines.experimental.coroutine.TransformCoroutine](../com.vperi.kotlinx.coroutines.experimental.coroutine/-transform-coroutine/index.md) |  |
 | [com.vperi.kotlinx.coroutines.experimental.coroutine.TransformScope](../com.vperi.kotlinx.coroutines.experimental.coroutine/-transform-scope/index.md) | Internal interface to a transform channel as seen by the transform function. |

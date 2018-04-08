@@ -4,70 +4,37 @@ package com.vperi.kotlinx.coroutines.experimental.coroutine
 
 import com.vperi.kotlinx.coroutines.experimental.Result
 import com.vperi.kotlinx.coroutines.experimental.resultOf
-import kotlinx.coroutines.experimental.*
+import kotlinx.coroutines.experimental.AbstractCoroutine
+import kotlinx.coroutines.experimental.CoroutineStart
+import kotlinx.coroutines.experimental.Job
 import kotlin.coroutines.experimental.CoroutineContext
 
-fun Job.then(
-  context: CoroutineContext = DefaultDispatcher,
-  parent: Job? = null,
-  successHandler: suspend () -> Unit,
-  failureHandler: (suspend (Throwable) -> Unit)?
-): Job =
-  afterBuilder(context, parent)
-    .apply {
-      val startType = CoroutineStart.DEFAULT
-      this@then.invokeOnCompletion { err ->
-        when (err) {
-          null -> this.start(startType, this, { successHandler() })
-          else -> when (failureHandler) {
-            null -> this.cancel(err)
-            else -> this.start(startType, this, { failureHandler(err) })
-          }
-        }
-      }
-    }
-
-fun Job.finally(
-  context: CoroutineContext = DefaultDispatcher,
-  parent: Job? = null,
-  handler: suspend (Result<Unit>) -> Unit
-): Job =
-  afterBuilder(context, parent)
-    .apply {
-      val startType = CoroutineStart.DEFAULT
-      this@finally.invokeOnCompletion { err ->
-        this.start(startType, this, {
-          handler(if (err == null) resultOf(Unit) else resultOf(err))
-        })
-      }
-    }
-
-fun Job.then(
-  context: CoroutineContext = DefaultDispatcher,
-  parent: Job? = null,
-  success: suspend () -> Unit
-): Job =
-  then(context, parent, success, null)
-
-fun Job.catch(
-  context: CoroutineContext = DefaultDispatcher,
-  parent: Job? = null,
-  failure: (suspend (Throwable) -> Unit)
-): Job =
-  then(context, parent, {}, failure)
-
-internal fun afterBuilder(
-  context: CoroutineContext = DefaultDispatcher,
-  parent: Job? = null,
-  active: Boolean = true
-): AfterCoroutine =
-  AfterCoroutine(
-    parentContext = newCoroutineContext(context, parent),
-    active = active
-  )
-
-class AfterCoroutine(
+internal class AfterCoroutine(
   parentContext: CoroutineContext,
+  override val prev: Job,
   active: Boolean = true
-) : AbstractCoroutine<Unit>(parentContext, active)
+) : AbstractCoroutine<Unit>(parentContext, active),
+  AfterScope {
+
+  private fun doStart(block: suspend AfterCoroutine.() -> Unit) =
+    this.start(CoroutineStart.DEFAULT, this, block)
+
+  fun doAfter(
+    err: Throwable?,
+    successHandler: suspend AfterScope.() -> Unit,
+    failureHandler: (suspend AfterScope.(Throwable) -> Unit)?) {
+    when (err) {
+      null -> doStart { successHandler() }
+      else -> when (failureHandler) {
+        null -> this.cancel(err)
+        else -> doStart { failureHandler(err) }
+      }
+    }
+  }
+
+  fun doFinally(
+    err: Throwable?,
+    handler: suspend AfterScope.(Result<Unit>) -> Unit) =
+    doStart { handler(resultOf(err)) }
+}
 

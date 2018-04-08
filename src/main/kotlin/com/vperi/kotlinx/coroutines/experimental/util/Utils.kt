@@ -92,6 +92,13 @@ fun decodeUtf8(context: CoroutineContext = DefaultDispatcher) =
     }
   }
 
+fun encodeUtf8(context: CoroutineContext = DefaultDispatcher) =
+  transform<String, ByteBuffer>(context) {
+    input.consumeEachWithStats {
+      output.sendWithStats(it.encodeUtf8())
+    }
+  }
+
 /**
  * Splits each [String] into a sequence of strings around
  * occurrences of the [delimiters] and sends each of the

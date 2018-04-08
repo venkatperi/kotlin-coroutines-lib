@@ -15,6 +15,9 @@ fun ByteBuffer.decodeUtf8(): String {
   return String(bytes, StandardCharsets.UTF_8)
 }
 
+fun String.encodeUtf8(): ByteBuffer =
+  StandardCharsets.UTF_8.encode(this)
+
 val <T> ReceiveChannel<T>.stats
   by LazyWithReceiver<ReceiveChannel<T>, ChannelStats> { ChannelStats() }
 
@@ -33,3 +36,10 @@ suspend fun <E> SendChannel<E>.sendWithStats(element: E) {
   stats.elements.incrementAndGet()
   send(element)
 }
+
+/**
+ * Suspends until all messages are consumed from the [ReceiveChannel]
+ *
+ */
+suspend fun <E> ReceiveChannel<E>.drain() =
+  consumeEachWithStats {}
