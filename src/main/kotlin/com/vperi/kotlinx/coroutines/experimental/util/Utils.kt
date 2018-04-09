@@ -8,10 +8,7 @@ import com.vperi.kotlinx.coroutines.experimental.coroutine.then
 import com.vperi.kotlinx.coroutines.experimental.coroutine.transform
 import kotlinx.coroutines.experimental.CompletableDeferred
 import kotlinx.coroutines.experimental.DefaultDispatcher
-import kotlinx.coroutines.experimental.channels.ReceiveChannel
-import kotlinx.coroutines.experimental.channels.SendChannel
-import kotlinx.coroutines.experimental.channels.actor
-import kotlinx.coroutines.experimental.channels.produce
+import kotlinx.coroutines.experimental.channels.*
 import java.lang.Integer.max
 import java.nio.ByteBuffer
 import java.util.concurrent.ConcurrentLinkedQueue
@@ -127,7 +124,7 @@ fun encodeUtf8(context: CoroutineContext = DefaultDispatcher) =
  * generated strings as messages on its output.
  *
  * An incoming message may result in zero or more output messages.
- * @param aligned incoming messages are aligned, i.e output message won't
+ * @param aligned tells splitter that incoming messages are aligned, i.e output message won't
  *   be split over two incoming messages.
  */
 fun splitter(
@@ -154,3 +151,52 @@ fun splitter(
     if (prev.isNotBlank())
       output.sendWithStats(prev)
   }
+
+fun ReceiveChannel<String>.split(
+  regex: Regex,
+  aligned: Boolean = false,
+  context: CoroutineContext = DefaultDispatcher) =
+  produce<String>(context) {
+    var prev = ""
+
+    this@split.consumeEach {
+      (prev + it).split(regex).let {
+        val (items, remainder) = when (aligned) {
+          true -> it to ""
+          else -> it.take(max(0, it.size - 1)) to it.last()
+        }
+        prev = remainder
+
+        items.forEach {
+          channel.send(it)
+        }
+      }
+    }
+
+    if (prev.isNotBlank())
+      channel.send(prev)
+  }
+
+fun <T> ReceiveChannel<T>.tee(
+  listener: SendChannel<T>,
+  context: CoroutineContext = DefaultDispatcher) =
+  produce<T>(context) {
+    this@tee.consumeEach {
+      listener.send(it)
+      channel.send(it)
+    }
+    listener.close()
+  }
+
+fun <T> ReceiveChannel<T>.countMessages(
+  result: CompletableDeferred<Long>,
+  context: CoroutineContext = DefaultDispatcher) =
+  produce<T>(context) {
+    var total = 0L
+    this@countMessages.consumeEach {
+      total++
+      channel.send(it)
+    }
+    result.complete(total)
+  }
+

@@ -1,9 +1,7 @@
 package com.vperi.kotlinx.coroutines.experimental
 
 import com.vperi.kotlinx.coroutines.experimental.coroutine.pipe
-import com.vperi.kotlinx.coroutines.experimental.util.counter
-import com.vperi.kotlinx.coroutines.experimental.util.splitter
-import com.vperi.kotlinx.coroutines.experimental.util.tee
+import com.vperi.kotlinx.coroutines.experimental.util.*
 import kotlinx.coroutines.experimental.CompletableDeferred
 import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.channels.Channel
@@ -76,6 +74,36 @@ class PipeExamples {
         .pipe(splitter(WS, true))     // split lines into words (words are aligned)
         .pipe(counter(wordCounter))   // count words
         .drainAndJoin()               // wait
+
+      assertEquals(textData.length, actualDataSize.await(), "validating producer data length")
+      assertEquals(actualLines, lineCounter.await(), "line count doesn't match")
+      assertEquals(actualWords, wordCounter.await(), "word count doesn't match")
+    }
+  }
+
+  @Test
+  fun extensions_with_produce() {
+    val lines = textData.split(NL)
+    val actualLines = lines.count().toLong()
+    val actualWords = lines.flatMap { it.split(WS) }.count().toLong()
+
+    runBlocking {
+      val lineCounter = CompletableDeferred<Long>()
+      val wordCounter = CompletableDeferred<Long>()
+      val verifyLength = Channel<String>()
+      val actualDataSize = async {
+        var total = 0
+        verifyLength.consumeEach { total += it.length }
+        total
+      }
+
+      dataProducer()                  // emit chunks of 512 bites
+        .tee(verifyLength)            // verify that we're getting all of the data
+        .split(NL)                    // split into lines
+        .countMessages(lineCounter)   // count lines
+        .split(WS, true)              // split lines into words (words are aligned)
+        .countMessages(wordCounter)   // count words
+        .drain()                      // wait
 
       assertEquals(textData.length, actualDataSize.await(), "validating producer data length")
       assertEquals(actualLines, lineCounter.await(), "line count doesn't match")

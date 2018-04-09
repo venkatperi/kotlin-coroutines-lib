@@ -5,6 +5,7 @@ import com.vperi.kotlinx.coroutines.experimental.ChannelStats
 import kotlinx.coroutines.experimental.channels.ReceiveChannel
 import kotlinx.coroutines.experimental.channels.SendChannel
 import kotlinx.coroutines.experimental.channels.consume
+import kotlinx.coroutines.experimental.channels.consumeEach
 import java.nio.ByteBuffer
 import java.nio.charset.StandardCharsets
 
@@ -42,4 +43,4 @@ suspend fun <E> SendChannel<E>.sendWithStats(element: E) {
  *
  */
 suspend fun <E> ReceiveChannel<E>.drain() =
-  consumeEachWithStats {}
+  consumeEach {}
