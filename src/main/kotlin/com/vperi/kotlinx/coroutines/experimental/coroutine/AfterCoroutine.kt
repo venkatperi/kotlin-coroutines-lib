@@ -16,7 +16,7 @@ internal class AfterCoroutine(
 ) : AbstractCoroutine<Unit>(parentContext, active),
   AfterScope {
 
-  private fun doStart(block: suspend AfterCoroutine.() -> Unit) =
+  private fun actuallyStart(block: suspend AfterCoroutine.() -> Unit) =
     this.start(CoroutineStart.DEFAULT, this, block)
 
   fun doAfter(
@@ -24,10 +24,10 @@ internal class AfterCoroutine(
     successHandler: suspend AfterScope.() -> Unit,
     failureHandler: (suspend AfterScope.(Throwable) -> Unit)?) {
     when (err) {
-      null -> doStart { successHandler() }
+      null -> actuallyStart { successHandler() }
       else -> when (failureHandler) {
         null -> this.cancel(err)
-        else -> doStart { failureHandler(err) }
+        else -> actuallyStart { failureHandler(err) }
       }
     }
   }
@@ -35,6 +35,6 @@ internal class AfterCoroutine(
   fun doFinally(
     err: Throwable?,
     handler: suspend AfterScope.(Result<Unit>) -> Unit) =
-    doStart { handler(resultOf(err)) }
+    actuallyStart { handler(resultOf(err)) }
 }
 

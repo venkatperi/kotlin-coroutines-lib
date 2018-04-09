@@ -9,7 +9,12 @@ import kotlin.coroutines.experimental.CoroutineContext
  * Exposes a coroutine that has a outgoing [Channel] as a
  * [Job] and associated [ReceiveChannel].
  *
- * Useful for terminating pipes with [drainAndJoin]
+ * Useful for terminating pipes with [drainAndJoin]o
+ *
+ * NOTE: We inherit from [AbstractCoroutine] rather than [Job]
+ * otherwise the compiler complains about duplicate `cancel`
+ * definitions with default values.
+ *
  */
 abstract class JobWithReceiveChannel<out E>(
   parentContext: CoroutineContext,
@@ -29,6 +34,5 @@ abstract class JobWithReceiveChannel<out E>(
     receiver.drain()
     join()
   }
-
 }
 

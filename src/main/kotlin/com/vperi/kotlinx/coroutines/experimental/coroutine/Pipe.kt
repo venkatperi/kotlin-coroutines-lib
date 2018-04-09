@@ -30,14 +30,14 @@ import kotlin.coroutines.experimental.CoroutineContext
 fun <T> ReceiveChannel<T>.pipe(
   destination: SendChannel<T>,
   context: CoroutineContext = DefaultDispatcher): Job =
-  PipeCoroutine(
+  TerminatingPipeCoroutine(
     parentContext = newCoroutineContext(context, null),
     source = this,
     destination = destination,
     active = true
   ).apply {
-    this.start(kotlinx.coroutines.experimental.CoroutineStart.DEFAULT,
-      this, {
+    this.start(CoroutineStart.DEFAULT,
+      this@pipe, {
       source.consumeEachWithStats { destination.sendWithStats(it) }
     })
     finally(context) {

@@ -6,7 +6,7 @@ import kotlinx.coroutines.experimental.channels.SendChannel
 import kotlinx.coroutines.experimental.handleCoroutineException
 import kotlin.coroutines.experimental.CoroutineContext
 
-class PipeCoroutine<E>(
+class TerminatingPipeCoroutine<E>(
   parentContext: CoroutineContext,
   val source: ReceiveChannel<E>,
   @Suppress("unused") val destination: SendChannel<E>,
