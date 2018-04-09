@@ -2,12 +2,13 @@ package com.vperi.kotlinx.coroutines.experimental.util
 
 import com.vperi.kotlin.LazyWithReceiver
 import com.vperi.kotlinx.coroutines.experimental.ChannelStats
-import kotlinx.coroutines.experimental.channels.ReceiveChannel
-import kotlinx.coroutines.experimental.channels.SendChannel
-import kotlinx.coroutines.experimental.channels.consume
-import kotlinx.coroutines.experimental.channels.consumeEach
+import com.vperi.kotlinx.coroutines.experimental.coroutine.TransformScope2
+import com.vperi.kotlinx.coroutines.experimental.coroutine.TransformScope2Impl
+import kotlinx.coroutines.experimental.DefaultDispatcher
+import kotlinx.coroutines.experimental.channels.*
 import java.nio.ByteBuffer
 import java.nio.charset.StandardCharsets
+import kotlin.coroutines.experimental.CoroutineContext
 
 fun ByteBuffer.decodeUtf8(): String {
   flip()
@@ -44,3 +45,17 @@ suspend fun <E> SendChannel<E>.sendWithStats(element: E) {
  */
 suspend fun <E> ReceiveChannel<E>.drain() =
   consumeEach {}
+
+suspend fun <E> SendChannel<E>.sendAll(items: Iterable<E>) =
+  items.forEach {
+    send(it)
+  }
+
+fun <E, V> ReceiveChannel<E>.transform(
+  context: CoroutineContext = DefaultDispatcher,
+  block: suspend TransformScope2<E, V>.() -> Unit) =
+  produce<V>(context) {
+    block(TransformScope2Impl(this@transform, this@produce))
+  }
+
+

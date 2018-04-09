@@ -98,7 +98,7 @@ class PipeExamples {
       }
 
       dataProducer()                  // emit chunks of 512 bites
-        .tee(verifyLength)            // verify that we're getting all of the data
+        .tee(listener = verifyLength) // verify that we're getting all of the data
         .split(NL)                    // split into lines
         .countMessages(lineCounter)   // count lines
         .split(WS, true)              // split lines into words (words are aligned)
