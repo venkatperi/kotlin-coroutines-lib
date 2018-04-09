@@ -190,12 +190,10 @@ fun <T> ReceiveChannel<T>.countMessages(
   result: CompletableDeferred<Long>,
   context: CoroutineContext = DefaultDispatcher) =
   transform<T, T>(context) {
-    var total = 0L
-    consumeEach {
-      total++
+    result.complete(sumBy({
       send(it)
-    }
-    result.complete(total)
+      1
+    }))
   }
 
 fun ReceiveChannel<ByteBuffer>.decodeUtf8(
@@ -213,3 +211,11 @@ fun ReceiveChannel<String>.encodeUtf8(
       send(it.encodeUtf8())
     }
   }
+
+public suspend inline fun <E> ReceiveChannel<E>.sumBy(selector: (E) -> Long): Long {
+  var sum = 0L
+  consumeEach {
+    sum += selector(it)
+  }
+  return sum
+}
