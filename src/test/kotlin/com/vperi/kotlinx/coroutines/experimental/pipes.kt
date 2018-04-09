@@ -84,7 +84,7 @@ class PipesTest {
         listener.count()
       }
 
-      val splitter = splitLines()
+      val splitter = splitter(NL)
       val teeListener = tee(listener)
       FS.createReader(inputFile.toPath())
         .pipe(decodeUtf8())

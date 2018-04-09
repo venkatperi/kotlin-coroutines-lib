@@ -6,6 +6,7 @@ import com.vperi.kotlinx.coroutines.experimental.coroutine.TransformChannel
 import com.vperi.kotlinx.coroutines.experimental.coroutine.TransformCoroutine
 import com.vperi.kotlinx.coroutines.experimental.coroutine.then
 import com.vperi.kotlinx.coroutines.experimental.coroutine.transform
+import kotlinx.coroutines.experimental.CompletableDeferred
 import kotlinx.coroutines.experimental.DefaultDispatcher
 import kotlinx.coroutines.experimental.channels.ReceiveChannel
 import kotlinx.coroutines.experimental.channels.SendChannel
@@ -14,6 +15,7 @@ import kotlinx.coroutines.experimental.channels.produce
 import java.lang.Integer.max
 import java.nio.ByteBuffer
 import java.util.concurrent.ConcurrentLinkedQueue
+import java.util.concurrent.atomic.AtomicLong
 import kotlin.coroutines.experimental.CoroutineContext
 
 /**
@@ -88,6 +90,20 @@ fun <T> contents(
   }
 }
 
+fun <T> counter(
+  result: CompletableDeferred<Long>,
+  context: CoroutineContext = DefaultDispatcher
+): TransformCoroutine<T, T> {
+  return transform(context) {
+    val total = AtomicLong(0L)
+    input.consumeEachWithStats {
+      output.sendWithStats(it)
+      total.incrementAndGet()
+    }
+    result.complete(total.get())
+  }
+}
+
 /**
  * Decodes incoming [ByteBuffer]s as utf8 encoded [String].
  */
@@ -107,27 +123,32 @@ fun encodeUtf8(context: CoroutineContext = DefaultDispatcher) =
 
 /**
  * Splits each [String] into a sequence of strings around
- * occurrences of the [delimiters] and sends each of the
+ * occurrences of the [regex] and sends each of the
  * generated strings as messages on its output.
  *
  * An incoming message may result in zero or more output messages.
+ * @param aligned incoming messages are aligned, i.e output message won't
+ *   be split over two incoming messages.
  */
-fun splitLines(
-  context: CoroutineContext = DefaultDispatcher,
-  vararg delimiters: String = listOf("\n").toTypedArray(),
-  ignoreCase: Boolean = false) =
+fun splitter(
+  regex: Regex,
+  aligned: Boolean = false,
+  context: CoroutineContext = DefaultDispatcher) =
   transform<String, String>(context) {
     var prev = ""
 
     input.consumeEachWithStats {
-      (prev + it)
-        .split(*delimiters, ignoreCase = ignoreCase).let { lines ->
-          prev = lines.last()
-
-          lines.take(max(0, lines.size - 1)).forEach {
-            output.sendWithStats(it)
-          }
+      (prev + it).split(regex).let {
+        val (items, remainder) = when (aligned) {
+          true -> it to ""
+          else -> it.take(max(0, it.size - 1)) to it.last()
         }
+        prev = remainder
+
+        items.forEach {
+          output.sendWithStats(it)
+        }
+      }
     }
 
     if (prev.isNotBlank())
