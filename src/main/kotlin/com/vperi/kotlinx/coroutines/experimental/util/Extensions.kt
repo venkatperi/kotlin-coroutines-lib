@@ -58,4 +58,5 @@ fun <E, V> ReceiveChannel<E>.transform(
     block(TransformScope2Impl(this@transform, this@produce))
   }
 
-
+fun <T> Iterable<T>.takeAllBut(n: Int): List<T> =
+  take(kotlin.math.max(0, this.count() - n))

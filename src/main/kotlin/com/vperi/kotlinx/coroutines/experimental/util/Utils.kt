@@ -9,7 +9,6 @@ import com.vperi.kotlinx.coroutines.experimental.coroutine.transform
 import kotlinx.coroutines.experimental.CompletableDeferred
 import kotlinx.coroutines.experimental.DefaultDispatcher
 import kotlinx.coroutines.experimental.channels.*
-import java.lang.Integer.max
 import java.nio.ByteBuffer
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.atomic.AtomicLong
@@ -138,7 +137,7 @@ fun splitter(
       (prev + it).split(regex).let {
         val (items, remainder) = when (aligned) {
           true -> it to ""
-          else -> it.take(max(0, it.size - 1)) to it.last()
+          else -> it.takeAllBut(1) to it.last()
         }
         prev = remainder
 
@@ -163,7 +162,7 @@ fun ReceiveChannel<String>.split(
       (prev + it).split(regex).let {
         val (items, remainder) = when (aligned) {
           true -> it to ""
-          else -> it.take(max(0, it.size - 1)) to it.last()
+          else -> it.takeAllBut(1) to it.last()
         }
         prev = remainder
 
@@ -199,3 +198,18 @@ fun <T> ReceiveChannel<T>.countMessages(
     result.complete(total)
   }
 
+fun ReceiveChannel<ByteBuffer>.decodeUtf8(
+  context: CoroutineContext = DefaultDispatcher) =
+  transform<ByteBuffer, String>(context) {
+    consumeEach {
+      send(it.decodeUtf8())
+    }
+  }
+
+fun ReceiveChannel<String>.encodeUtf8(
+  context: CoroutineContext = DefaultDispatcher) =
+  transform<String, ByteBuffer>(context) {
+    consumeEach {
+      send(it.encodeUtf8())
+    }
+  }
