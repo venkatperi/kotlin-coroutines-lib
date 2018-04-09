@@ -34,7 +34,7 @@ Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenat
 Nullam quis ante. Etiam sit amet orci eget eros faucibus tincidunt. Duis leo.
 Sed fringilla mauris sit amet nibh. Donec sodales sagittis magna. Sed consequat, leo eget bibendum sodales, augue velit cursus nunc, """
 
-val textData = (0 until 100).joinToString("\n") { paragraph }
+val textData = (0 until 100).joinToString("\n\n") { paragraph }
 
 fun dataProducer(
   chunkSize: Int = 512
