@@ -159,7 +159,7 @@ fun ReceiveChannel<String>.split(
   produce<String>(context) {
     var prev = ""
 
-    this@split.consumeEach {
+    consumeEach {
       (prev + it).split(regex).let {
         val (items, remainder) = when (aligned) {
           true -> it to ""
@@ -168,7 +168,7 @@ fun ReceiveChannel<String>.split(
         prev = remainder
 
         items.forEach {
-          channel.send(it)
+          send(it)
         }
       }
     }
@@ -181,9 +181,9 @@ fun <T> ReceiveChannel<T>.tee(
   listener: SendChannel<T>,
   context: CoroutineContext = DefaultDispatcher) =
   produce<T>(context) {
-    this@tee.consumeEach {
+    consumeEach {
       listener.send(it)
-      channel.send(it)
+      send(it)
     }
     listener.close()
   }
@@ -191,11 +191,11 @@ fun <T> ReceiveChannel<T>.tee(
 fun <T> ReceiveChannel<T>.countMessages(
   result: CompletableDeferred<Long>,
   context: CoroutineContext = DefaultDispatcher) =
-  produce<T>(context) {
+  produce(context) {
     var total = 0L
-    this@countMessages.consumeEach {
+    consumeEach {
       total++
-      channel.send(it)
+      send(it)
     }
     result.complete(total)
   }
