@@ -198,21 +198,24 @@ fun <T> ReceiveChannel<T>.countMessages(
 
 fun ReceiveChannel<ByteBuffer>.decodeUtf8(
   context: CoroutineContext = DefaultDispatcher) =
-  transform<ByteBuffer, String>(context) {
-    consumeEach {
-      send(it.decodeUtf8())
-    }
-  }
+  map(context) { it.decodeUtf8() }
+//  transform<ByteBuffer, String>(context) {
+//    consumeEach {
+//      send(it.decodeUtf8())
+//    }
+//  }
 
 fun ReceiveChannel<String>.encodeUtf8(
   context: CoroutineContext = DefaultDispatcher) =
-  transform<String, ByteBuffer>(context) {
-    consumeEach {
-      send(it.encodeUtf8())
-    }
-  }
+  map(context) { it.encodeUtf8() }
+//  transform<String, ByteBuffer>(context) {
+//    consumeEach {
+//      send(it.encodeUtf8())
+//    }
+//  }
 
-public suspend inline fun <E> ReceiveChannel<E>.sumBy(selector: (E) -> Long): Long {
+public suspend inline fun <E> ReceiveChannel<E>.sumBy(
+  selector: (E) -> Long): Long {
   var sum = 0L
   consumeEach {
     sum += selector(it)

@@ -2,6 +2,7 @@
 
 package com.vperi.kotlinx.coroutines.experimental
 
+import com.vperi.kotlinx.coroutines.experimental.coroutine.finally
 import com.vperi.kotlinx.coroutines.experimental.sync.withCountDown
 import kotlinx.coroutines.experimental.*
 import kotlinx.coroutines.experimental.channels.ReceiveChannel
@@ -24,12 +25,16 @@ fun <T : Job> Iterable<T>.completed(
 ): ReceiveChannel<IndexedValue<T>> =
   produce(context) {
     withCountDown(count()) {
-      withIndex().forEach {
-        async(coroutineContext) {
-          it.value.resultAsync() //block until result, but ignore it
+      withIndex().forEach { item ->
+        item.value.finally(context) {
           countDown()
-          send(it)
+          send(item)
         }
+//        async(coroutineContext) {
+//          it.value.resultAsync() //block until result, but ignore it
+//          countDown()
+//          send(it)
+//        }
       }
     }
   }
